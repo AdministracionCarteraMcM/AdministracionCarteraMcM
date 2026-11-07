@@ -631,6 +631,128 @@ body{background:#f4f6f9!important;font-family:'Segoe UI',Arial,sans-serif!import
 #tab-diarios .pd-card h3{white-space:normal;overflow-wrap:anywhere;line-height:1.35!important}
 #tab-diarios .pd-stat label{white-space:normal;overflow-wrap:anywhere;line-height:1.35}
 #tab-diarios .pd-table-scroll{width:100%;max-width:100%;overflow-x:auto;overscroll-behavior-inline:contain}
+
+/* Renovación visual McM: navegación, métricas y lectura del panel. */
+:root{
+  --bg-header:#103b2d;
+  --header2:#17563f;
+  --accent:#13845e;
+  --accent-dark:#0c6548;
+  --accent-light:#e9f5ef;
+  --bg-page:#f4f7f4;
+  --bg-card:#fff;
+  --text-primary:#18251e;
+  --text-secondary:#66756d;
+  --border:#e1e8e2;
+  --radius:15px;
+  --gap:18px;
+}
+body{background:var(--bg-page);color:var(--text-primary);line-height:1.45}
+.dashboard-container{width:min(1640px,100%);padding:clamp(14px,2vw,30px);margin:0 auto}
+.dashboard-header{
+  min-height:92px;padding:20px 24px;border:1px solid rgba(255,255,255,.08);
+  border-radius:18px;background:linear-gradient(115deg,#102f25 0%,#14543d 72%,#1c684b 100%);
+  box-shadow:0 12px 28px rgba(16,59,45,.12)
+}
+.dashboard-header h1{font-size:clamp(20px,2vw,25px);letter-spacing:-.45px}
+.dashboard-header .sub{margin-top:5px;color:#c0d8cb;font-size:12px}
+.hdr-right{gap:12px}
+.user-badge .name{font-size:13px}
+.role-pill{letter-spacing:.55px}
+#tabs-bar{
+  display:flex!important;justify-content:center!important;gap:5px;width:min(720px,100%)!important;
+  max-width:720px!important;padding:5px;margin:0 auto 18px!important;
+  border:1px solid #e0e8e1;border-radius:12px;background:#eaf0eb
+}
+#tabs-bar .tab-btn{
+  min-height:44px;flex:1 1 0!important;padding:10px 14px!important;border:0;border-radius:9px;
+  color:#596b60;background:transparent;font-size:13px!important;font-weight:700;
+  transition:background .16s ease,color .16s ease,box-shadow .16s ease
+}
+#tabs-bar .tab-btn:hover:not(.active){background:rgba(255,255,255,.65);color:#203b2c}
+#tabs-bar .tab-btn.active{background:#fff;color:#0c6548;box-shadow:0 2px 8px rgba(16,59,45,.09),inset 0 -2px 0 #13845e}
+.filters-bar{
+  gap:12px;padding:16px 18px;border:1px solid var(--border);border-radius:15px;
+  background:#fff;box-shadow:0 4px 16px rgba(23,49,34,.035)
+}
+.filter-group{min-width:145px;gap:6px}
+.filter-group label{font-size:10px;letter-spacing:.65px;color:#627268}
+.filter-group select,.filter-group input,.ms-toggle{
+  min-height:40px;padding:9px 11px;border:1px solid #dce5de;border-radius:9px;
+  background:#fff;color:#26372d;font-size:13px;transition:border-color .15s,box-shadow .15s
+}
+.filter-group input[type=text]{min-width:190px}
+.filter-group select:focus,.filter-group input:focus,.ms-toggle:focus{
+  outline:0;border-color:#13845e;box-shadow:0 0 0 3px rgba(19,132,94,.12)
+}
+.ms-panel{border-color:#dce5de;border-radius:12px;box-shadow:0 16px 36px rgba(22,44,31,.15)}
+.reset-btn{min-height:40px;border-radius:9px;border-color:#dce5de;color:#405349;font-size:12px}
+.reset-btn:hover{background:#f0f6f2;border-color:#b9d2c2;color:#0c6548}
+.scope-note,.scope-hint{border-radius:9px;background:#e9f5ef;color:#0c6548}
+.kpi-row{grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));gap:13px}
+.kpi-card{
+  min-height:112px;padding:17px 18px;border:1px solid var(--border);border-left:0;
+  border-radius:14px;background:#fff;box-shadow:0 3px 12px rgba(23,49,34,.035)
+}
+.kpi-card::after{border-radius:50%}
+.kpi-label{font-size:10px;letter-spacing:.65px;color:#69786f}
+.kpi-value{font-size:24px;letter-spacing:-.55px;color:#1d3025;font-variant-numeric:tabular-nums}
+.kpi-sub{font-size:11px;line-height:1.45}
+.chart-row,.chart-row2{gap:18px}
+.chart-container,.table-section,.exec-history,.comp-box{
+  padding:19px;border:1px solid var(--border);border-radius:15px;background:#fff;
+  box-shadow:0 3px 12px rgba(23,49,34,.035)
+}
+.chart-container h3,.table-section h3,.exec-history h3{font-size:14px;letter-spacing:-.1px}
+.chart-container .wrap{height:290px}
+.table-section{overflow-x:auto}
+.data-table{font-variant-numeric:tabular-nums}
+.data-table thead th{background:#f5f8f5;color:#66756d;border-bottom:1px solid #dfe7e0}
+.data-table tbody td{padding:10px 11px}
+.data-table tbody tr:nth-child(even){background:#fbfcfb}
+.data-table tbody tr:hover{background:#eef7f1}
+.export-btn,.pagination button{min-height:34px;border-radius:8px;background:#fff;border-color:#dce5de;color:#0c6548}
+.export-btn:hover,.pagination button:not(:disabled):hover{background:#e9f5ef;border-color:#b9d2c2}
+.admin-card{
+  border:1px solid var(--border)!important;border-radius:15px!important;
+  box-shadow:0 3px 12px rgba(23,49,34,.04)!important
+}
+.admin-card h3{font-size:15px!important;color:#20372a}
+.admin-card p{color:#66756d;line-height:1.55}
+.admin-input,.admin-select,.user-search{min-height:38px;border-color:#dce5de;border-radius:9px}
+.admin-btn{min-height:38px;border-radius:9px}
+.admin-btn.add{background:#13845e}
+.admin-btn.add:hover{background:#0c6548}
+.admin-status{border-radius:10px;line-height:1.5}
+.login-card{border:1px solid rgba(255,255,255,.75)}
+:where(a,button,input,select,textarea,[tabindex]):focus-visible{outline:3px solid #13845e;outline-offset:3px}
+.dashboard-footer{padding:22px 0 8px;color:#78877e}
+@media(max-width:760px){
+  .dashboard-container{padding:12px}
+  .dashboard-header{align-items:flex-start;padding:17px;border-radius:15px}
+  .hdr-right{width:100%;justify-content:space-between;flex-wrap:wrap}
+  #tabs-bar{max-width:100%!important;gap:4px}
+  #tabs-bar .tab-btn{padding:9px 5px!important;font-size:12px!important}
+  .filters-bar{padding:13px;gap:10px}
+  .filter-group{flex:1 1 145px;min-width:0}
+  .filter-group select,.filter-group input,.ms-toggle{width:100%;min-width:0}
+  .filter-group input[type=text]{min-width:0}
+  .kpi-card{min-height:100px;padding:14px}
+  .kpi-value{font-size:22px}
+  .chart-container,.table-section,.exec-history,.comp-box{padding:15px}
+  .table-actions{margin:8px 0 10px;justify-content:flex-start}
+}
+@media(max-width:420px){
+  .dashboard-header{gap:14px}
+  .hdr-right{gap:8px}
+  .dashboard-header #hdr-refresh,.dashboard-header #logout-btn{flex:1 1 auto;padding:9px 10px}
+  #tabs-bar .tab-btn{font-size:10.5px!important;line-height:1.25!important}
+  .pagination{gap:8px;flex-wrap:wrap}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+
 </style>
 </head>
 <body>
@@ -661,7 +783,7 @@ body{background:#f4f6f9!important;font-family:'Segoe UI',Arial,sans-serif!import
       <label class="login-label" for="user-input">Usuario</label>
       <div class="input-wrap"><span class="input-icon">●</span><input type="text" id="user-input" name="username" placeholder="Escribe tu usuario" autocomplete="username" autocapitalize="none" spellcheck="false" autofocus></div>
       <label class="login-label" for="pw-input">Contraseña</label>
-      <div class="input-wrap"><span class="input-icon">◆</span><input type="password" id="pw-input" name="password" placeholder="Escribe tu contraseña" autocomplete="current-password"><button type="button" id="pw-toggle" class="mcm-pw-toggle" aria-label="Mostrar contraseña" aria-pressed="false">Ver</button>></div>
+      <div class="input-wrap"><span class="input-icon">◆</span><input type="password" id="pw-input" name="password" placeholder="Escribe tu contraseña" autocomplete="current-password"><button type="button" id="pw-toggle" class="mcm-pw-toggle" aria-label="Mostrar contraseña" aria-pressed="false">Ver</button></div>
       <button id="pw-btn" type="submit"><span>Ingresar</span><span class="btn-arrow">→</span></button>
       <div id="login-error" role="alert" aria-live="assertive"></div>
       </form>
