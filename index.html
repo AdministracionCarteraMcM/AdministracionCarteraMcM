@@ -448,6 +448,10 @@ body{
 </style>
 <style id="mcm-admin-v2">
 /* ---------- ADMINISTRACIÓN PARALELA ---------- */
+ details>summary{color:#163d32;background:#eef7f3;border:1px solid #b9ded1;border-radius:8px;padding:8px 11px;font-weight:800;cursor:pointer;text-shadow:none;}
+ details>summary:hover,details[open]>summary{background:#d9f0e7;color:#0b5a43;border-color:#72bea5;}
+ body.dx-wide.dx-dark details>summary{color:#e5ecf6;background:#172b49;border-color:#355a88;text-shadow:none;}
+ body.dx-wide.dx-dark details>summary:hover,body.dx-wide.dx-dark details[open]>summary{background:#213d67;color:#fff;border-color:#5b8dcc;}
 .admin-wrap{display:grid;grid-template-columns:1.25fr .75fr;gap:16px;margin-bottom:16px;}
 .admin-card{background:var(--bg-card);border-radius:var(--radius);padding:20px;box-shadow:0 1px 4px rgba(0,0,0,.06);border:1px solid var(--border);}
 .admin-card h3{margin:0 0 6px;font-size:15px;}
@@ -1305,7 +1309,7 @@ body.dx-wide @keyframes dxspin{to{transform:rotate(360deg)}}
     var rol = (typeof ROLE_LABELS !== 'undefined' && ROLE_LABELS[session.role]) ? ROLE_LABELS[session.role] : session.role;
     return '<section class="dx-segment"><div class="dx-seg-l">📍 Segmento activo: <b>' + e(seg) + '</b></div>' +
       (corte ? '<div class="dx-corte">🗓 Corte: ' + e(corte) + '</div>' : '') +
-      '<div class="dx-seg-r">Acceso ' + e(rol) + ' — <b>' + e(session.nombre || '') + '</b></div></section>';
+      '<div class="dx-seg-r"><b>' + e(session.nombre || '') + '</b></div></section>';
   }
   function scoreHtml(p) { return '<span class="dx-score ' + level(p) + '">' + levelText(p) + '</span>'; }
   function treeRows(node) {
@@ -1480,7 +1484,7 @@ body.dx-wide @keyframes dxspin{to{transform:rotate(360deg)}}
    - Reportes: solo se elige un reporte (menú) y un mes; los datos se consultan al servidor.
    - Administración: ahí se carga el archivo y se publica (hoja NORMALIDAD, un mes o varios).
    Acciones en Apps Script: report_list, report_get, report_save, report_delete.
-   Si el servidor aún no las tiene, la carga queda solo en este navegador (sessionStorage).
+    Si el servidor aún no las tiene, la carga queda como respaldo persistente solo en este navegador (localStorage); no sustituye la publicación compartida.
    Reporte 1: Cobranza por pago mensual (dashboard portado del HTML "Cobranza_por_pago_mensual").
    Para agregar otro reporte: nueva entrada en REPORTES + su lector de archivo + su vista.
    ===================================================================== */
@@ -1547,8 +1551,8 @@ return {init:init, render:render, setThresholds:(g,a)=>{green=g;amber=a;}, hasDa
   function e(s) { return X.e(s); }
   function N(v) { v = Number(v); return isFinite(v) ? v : 0; }
   function user() { return (typeof session !== 'undefined' && session && (session.username || session.nombre)) || 'u'; }
-  function load() { try { return JSON.parse(sessionStorage.getItem(STORE + user()) || '{"meses":{}}'); } catch (x) { return { meses: {} }; } }
-  function save(o) { try { sessionStorage.setItem(STORE + user(), JSON.stringify(o)); return true; } catch (x) { return false; } }
+   function load() { try { return JSON.parse(localStorage.getItem(STORE + user()) || '{"meses":{}}'); } catch (x) { return { meses: {} }; } }
+   function save(o) { try { localStorage.setItem(STORE + user(), JSON.stringify(o)); return true; } catch (x) { return false; } }
   function mesLabel(key) { return MESES[+key.slice(5, 7) - 1] + ' ' + key.slice(0, 4); }
   function r2(v) { return Math.round(v * 100) / 100; }
   function r6(v) { return v == null ? null : Math.round(v * 1e6) / 1e6; }
@@ -1721,7 +1725,7 @@ return {init:init, render:render, setThresholds:(g,a)=>{green=g;amber=a;}, hasDa
         prepared = p; if (pub) pub.disabled = false;
         var h = '<b>' + p.rows.toLocaleString('es-MX') + ' registros de ejecutivo</b> en la hoja NORMALIDAD · ' + p.months.length + (p.months.length === 1 ? ' mes detectado' : ' meses detectados') + (p.skipped ? ' · ' + p.skipped + ' filas sin fecha de corte omitidas' : '') +
           '<table class="dx-adm-list"><thead><tr><th>Mes</th><th>Registros</th><th>Cortes</th><th>Regiones</th><th>Agencias</th><th>Normalidad</th><th>$ Esperado</th><th>Al publicar</th></tr></thead><tbody>';
-        p.months.forEach(function (m) { h += '<tr><td><b>' + e(mesLabel(m.month)) + '</b></td><td>' + m.rows + '</td><td>' + m.weeks.length + '</td><td>' + m.total.regions + '</td><td>' + m.total.agencies + '</td><td>' + X.pct(m.total.normality) + '</td><td>' + X.money(m.total.expectedAmt) + '</td><td>' + (exist[m.month] ? 'Reemplaza el mes publicado' : 'Mes nuevo') + '</td></tr>'; });
+         p.months.forEach(function (m) { h += '<tr><td><b>' + e(mesLabel(m.month)) + '</b></td><td>' + m.rows + '</td><td>' + m.weeks.length + '</td><td>' + m.total.regions + '</td><td>' + m.total.agencies + '</td><td>' + X.pct(m.total.normality) + '</td><td>' + X.money(m.total.expectedAmt) + '</td><td>' + (exist[m.month] ? 'Bloqueado: mes ya publicado' : 'Mes nuevo') + '</td></tr>'; });
         admMsg(h + '</tbody></table><span style="color:#9db0cf">Revisa que sean los meses correctos y pulsa «Publicar reporte». Cada mes se guarda por separado; el reporte se va concentrando mes con mes.</span>', '');
       } catch (x) { admMsg('No se pudo leer: ' + e(x.message), 'err'); }
     };
@@ -1729,8 +1733,10 @@ return {init:init, render:render, setThresholds:(g,a)=>{green=g;amber=a;}, hasDa
   }
   function admPublish() {
     var p = prepared; if (!p) return;
+     var existing = p.months.filter(function (m) { return months().some(function (x) { return x.key === m.month; }); });
+     if (existing.length) { admMsg('No se publicó el archivo porque ya existe información para: <b>' + existing.map(function (m) { return e(mesLabel(m.month)); }).join(', ') + '</b>.<br>Esta versión solo permite anexar meses nuevos y conserva el histórico sin reemplazarlo.', 'err'); return; }
     var names = p.months.map(function (m) { return mesLabel(m.month); }).join(', ');
-    if (!confirm('¿Publicar ' + (p.months.length === 1 ? 'el mes ' : 'los meses ') + names + '?\nSi un mes ya está publicado, se reemplaza.')) return;
+     if (!confirm('¿Anexar ' + (p.months.length === 1 ? 'el mes ' : 'los meses ') + names + '?\nLos meses existentes se conservan sin reemplazo.')) return;
     var pub = admEl('dx-adm-rep-pub'); if (pub) pub.disabled = true;
     var ok = [], localOnly = [], i = 0, lastErr = '';
     function next() {
@@ -1821,5 +1827,22 @@ return {init:init, render:render, setThresholds:(g,a)=>{green=g;amber=a;}, hasDa
 })();
 </script>
 
+<script>
+(function(){
+  function enforceAdminOnly(){
+    var activeSession=typeof session!=='undefined'?session:null, role=String(activeSession&&activeSession.role||'').toLowerCase(), allowed=role==='admin';
+    var button=document.getElementById('admin-tab-btn'), panel=document.getElementById('tab-administracion');
+    if(button) button.style.display=allowed?'':'none';
+    if(panel) panel.style.display=allowed?'':'none';
+    if(!allowed && typeof state!=='undefined' && state.activeTab==='administracion'){
+      state.activeTab='indicadores';
+      var safe=document.querySelector('.tab-btn[data-tab="indicadores"]');
+      if(safe) safe.click();
+    }
+  }
+  enforceAdminOnly();
+  window.setInterval(enforceAdminOnly,1000);
+})();
+</script>
 </body>
 </html>
