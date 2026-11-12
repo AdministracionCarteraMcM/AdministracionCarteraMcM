@@ -1606,14 +1606,15 @@ function tableHTML(head,rows){return `<thead><tr>${head.map(x=>`<th>${esc(x)}</t
     if (hi < 0) throw new Error('No encontré los encabezados REGION / AGENCIA / EJECUTIVO en la hoja NORMALIDAD.');
     var col = {}; A[hi].forEach(function (h, j) { if (h != null) col[canon(h)] = j; });
     ['ESPERADO', 'RECIBIDO', '$ ESPERADA', '$ ESPERADA RECIBIDA', '$ RECIBIDA NO ESPERADA'].forEach(function (k) { if (col[k] == null) throw new Error('Falta la columna "' + k + '" en la hoja NORMALIDAD.'); });
-    var weekCol = col['CORTE SEMANAL'] != null ? col['CORTE SEMANAL'] : col['CORTE'];
-    var monthCol = col['CORTE MES'] != null ? col['CORTE MES'] : weekCol;
-    if (weekCol == null) throw new Error('Falta la columna "CORTE SEMANAL" (o "CORTE") en la hoja NORMALIDAD.');
+    var weekCol = col['CORTE SEMANAL'];
+    var monthCol = col['CORTE MES'];
+    if (weekCol == null) throw new Error('Falta la columna "CORTE SEMANAL" en la hoja NORMALIDAD.');
+    if (monthCol == null) throw new Error('Falta la columna "CORTE MES" en la hoja NORMALIDAD.');
     var rows = [], skipped = 0;
     for (i = hi + 1; i < A.length; i++) {
       r = A[i]; if (!r) continue;
       if (typeof r[0] !== 'string' || !r[0].trim() || typeof r[2] !== 'string' || !r[2].trim()) continue;   // totales y renglones vacíos
-      var date = toISO(r[weekCol]), monthDate = toISO(r[monthCol]) || date; if (!date || !monthDate) { skipped++; continue; }
+      var date = toISO(r[weekCol]), monthDate = toISO(r[monthCol]); if (!date || !monthDate) { skipped++; continue; }
       rows.push({ region: r[0].trim(), agency: String(r[1] == null ? '' : r[1]).trim() || 'SIN AGENCIA', date: date, month: monthDate.slice(0, 7),
         esp: N(r[col['ESPERADO']]), rec: N(r[col['RECIBIDO']]), amtE: N(r[col['$ ESPERADA']]), amtER: N(r[col['$ ESPERADA RECIBIDA']]), amtNE: N(r[col['$ RECIBIDA NO ESPERADA']]) });
     }
@@ -1722,7 +1723,7 @@ function tableHTML(head,rows){return `<thead><tr>${head.map(x=>`<th>${esc(x)}</t
   }
   function openReport() {
     viewErr = '';
-    if (remote.list === null) { render(); loadList(); return; }
+    if (remote.list === null) { cache = {}; selMonth = null; render(); loadList(); return; }
     var ms = months();
     if (!selMonth || !ms.some(function (m) { return m.key === selMonth; })) selMonth = ms.length ? ms[0].key : null;
     render(); if (selMonth && !dataFor(selMonth)) loadData(selMonth);
