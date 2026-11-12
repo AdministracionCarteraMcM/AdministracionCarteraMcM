@@ -715,6 +715,11 @@ body.dx-wide.dx-dark .admin-card input,body.dx-wide.dx-dark .admin-card select,b
 body.dx-wide.dx-dark .admin-btn.secondary,body.dx-wide.dx-dark .export-btn,body.dx-wide.dx-dark .pagination button,body.dx-wide.dx-dark .table-section button{background:#1b2a45!important;color:#cbd8ee!important;border:1px solid #33466b!important}
 body.dx-wide.dx-dark .admin-btn.secondary:hover,body.dx-wide.dx-dark .export-btn:hover{background:#25375a!important}
 body.dx-wide.dx-dark .pd-card details,body.dx-wide.dx-dark .pd-card summary{color:#9ec1ff!important}
+ body.dx-wide .pd-table th,body.dx-wide .mc-chart-data table th{background:#f8fafc!important;color:#1d4ed8!important;border-bottom:1px solid #cbd5e1!important;text-shadow:none!important}
+ body.dx-wide .pd-table td,body.dx-wide .mc-chart-data table td{background:#fff!important;color:#1f2937!important;border-bottom:1px solid #dbe3ed!important;text-shadow:none!important}
+ body.dx-wide .pd-table td small,body.dx-wide .mc-chart-data table td small{color:#475569!important;text-shadow:none!important}
+ body.dx-wide.dx-dark .pd-table th,body.dx-wide.dx-dark .mc-chart-data table th{background:#f8fafc!important;color:#1d4ed8!important}
+ body.dx-wide.dx-dark .pd-table td,body.dx-wide.dx-dark .mc-chart-data table td{background:#fff!important;color:#1f2937!important}
 body.dx-wide.dx-dark .pd-card svg line[stroke="#e2e8f0"]{stroke:#2a3d5f!important}
 body.dx-wide.dx-dark .pd-card svg text[fill="#94a3b8"]{fill:#8fa3c4!important}
 body.dx-wide.dx-dark .pd-card svg text[fill="#64748b"]{fill:#9db0cf!important}
@@ -1311,6 +1316,12 @@ body.dx-wide @keyframes dxspin{to{transform:rotate(360deg)}}
       (corte ? '<div class="dx-corte">🗓 Corte: ' + e(corte) + '</div>' : '') +
       '<div class="dx-seg-r"><b>' + e(session.nombre || '') + '</b></div></section>';
   }
+  function renderSegmentTop() {
+    var header=document.querySelector('.dashboard-header'); if(!header) return;
+    var top=document.getElementById('dx-segment-top');
+    if(!top){header.insertAdjacentHTML('afterend','<div id="dx-segment-top"></div>');top=document.getElementById('dx-segment-top');}
+    top.innerHTML=segmentHtml(); top.hidden=false;
+  }
   function scoreHtml(p) { return '<span class="dx-score ' + level(p) + '">' + levelText(p) + '</span>'; }
   function treeRows(node) {
     var m = node.m, p = m.pe ? m.pr / m.pe : null, prom = m.cli ? m.pag / m.cli : null, mora = m.saldo ? m.mora / m.saldo : null;
@@ -1383,14 +1394,16 @@ body.dx-wide @keyframes dxspin{to{transform:rotate(360deg)}}
     var host = document.getElementById('tab-indicadores');
     if (!host) return;
     var old = host.querySelector('.dx-wrap'); if (old) old.remove();
-    if (!eligible() || !isWide()) return;
+     var segmentTop=document.getElementById('dx-segment-top');
+     if (!eligible() || !isWide()) { if(segmentTop) segmentTop.hidden=true; return; }
     try { postProcess(host); } catch (pe) { if (window.console) console.error(pe); }
     try {
       var d = currentRows();
       var tree = buildTree(d.roster);
       cache = { d: d, tree: tree };
       if (!treeSeeded) { expanded = new Set(['root'].concat(tree.territorios.map(function (t) { return t.id; })).concat(tree.regions.map(function (r) { return r.id; }))); treeSeeded = true; }
-      var html = '<div class="dx-wrap">' + segmentHtml() + kpisHtml(d) + panelsHtml() + '</div>';
+       renderSegmentTop();
+       var html = '<div class="dx-wrap">' + kpisHtml(d) + panelsHtml() + '</div>';
       host.insertAdjacentHTML('afterbegin', html);
     } catch (err) {
       if (window.console) console.error('Vista de escritorio:', err);
@@ -1497,6 +1510,7 @@ body.dx-wide @keyframes dxspin{to{transform:rotate(360deg)}}
 
   var CB_HTML = "<div class=\"wrap\"><header class=\"top\"><div><div class=\"eyebrow\">MCM · INTELIGENCIA DE COBRANZA</div><h1 class=\"title\">COBRANZA POR PAGO MENSUAL</h1><div class=\"subtitle\" id=\"cb-subtitle\">Normalidad, recuperación y desempeño por región y agencia</div></div>\n<div class=\"controls\"><div><label for=\"cb-month\">Corte mensual</label><select id=\"cb-month\"></select></div><div><label for=\"cb-region\">Región</label><select id=\"cb-region\"><option value=\"\">Todas las regiones</option></select></div><div><label for=\"cb-greenThreshold\">Verde ≥</label><input id=\"cb-greenThreshold\" type=\"number\" min=\"0\" max=\"1\" step=\"0.01\" value=\"0.95\" style=\"min-width:82px;width:82px\"></div><div><label for=\"cb-amberThreshold\">Ámbar ≥</label><input id=\"cb-amberThreshold\" type=\"number\" min=\"0\" max=\"1\" step=\"0.01\" value=\"0.90\" style=\"min-width:82px;width:82px\"></div><div><label>&nbsp;</label><button type=\"button\" class=\"cb-btn\" id=\"cb-refresh\">Actualizar</button></div></div></header>\n<section class=\"kpis\" id=\"cb-kpis\"></section>\n<section class=\"grid\">\n<article class=\"panel\"><h2 class=\"ptitle\">% de normalidad por región vs. promedio MCM (eje desde 70%)</h2><svg class=\"chart\" id=\"cb-c1\" viewBox=\"0 0 700 390\" role=\"img\"></svg></article>\n<article class=\"panel\"><h2 class=\"ptitle\">Tendencia semanal de % de normalidad por región (eje desde 75%)</h2><svg class=\"chart\" id=\"cb-c2\" viewBox=\"0 0 700 390\" role=\"img\"></svg></article>\n<article class=\"panel\"><h2 class=\"ptitle\">$ esperado: recibido vs. faltante y % de recuperación por región</h2><svg class=\"chart\" id=\"cb-c3\" viewBox=\"0 0 700 390\" role=\"img\"></svg></article>\n<article class=\"panel\"><h2 class=\"ptitle\">% de normalidad por región y semana (eje desde 70%)</h2><svg class=\"chart\" id=\"cb-c4\" viewBox=\"0 0 700 390\" role=\"img\"></svg></article>\n<article class=\"panel\"><h2 class=\"ptitle\">Ranking de agencias por % de normalidad mensual</h2><div class=\"pdesc\">Orden descendente. Colores según umbrales editables en el dashboard.</div><svg class=\"chart tall\" id=\"cb-c5\" viewBox=\"0 0 700 640\" role=\"img\"></svg></article>\n<article class=\"panel\"><h2 class=\"ptitle\">¿Quién mejoró o empeoró?</h2><div class=\"pdesc\">Cambio en puntos porcentuales: última semana con datos vs. primera semana con datos.</div><svg class=\"chart tall\" id=\"cb-c6\" viewBox=\"0 0 700 640\" role=\"img\"></svg></article>\n<article class=\"panel wide\"><h2 class=\"ptitle\">Detalle por región</h2><div class=\"pdesc\">Agregados calculados desde los ejecutivos del concentrado.</div><div class=\"tablewrap\"><table id=\"cb-regionTable\"></table></div></article>\n<article class=\"panel wide\"><h2 class=\"ptitle\">Ranking y detalle por agencia</h2><div class=\"pdesc\">Filtros de región, agencia y búsqueda se aplican a este detalle y a los gráficos de agencia.</div><div class=\"tablewrap\"><table id=\"cb-agencyTable\"></table></div></article>\n<article class=\"panel wide\"><h2 class=\"ptitle\">Mapa de calor · % de normalidad por agencia y semana</h2><div class=\"pdesc\">Escala visual orientativa 75% → 90% → 100%. Celda vacía = semana sin pagos esperados.</div><div class=\"tablewrap\"><table id=\"cb-heatTable\"></table></div></article>\n</section>\n<div class=\"footnote\" id=\"cb-footnote\"></div>\n<div class=\"footnote\" id=\"cb-footnote\"></div></div>";
 
+  CB_HTML=CB_HTML.replace('Escala visual orientativa 75% → 90% → 100%. Celda vacía = semana sin pagos esperados.','Cada celda calcula pagos recibidos ÷ pagos esperados por agencia y semana. Los colores siguen los umbrales configurados. Celda vacía = semana sin pagos esperados.');
   function cbCreate(DATA, SEM) {
 const COLORS=['#3A86FF','#22D3A5','#FFC53D','#FF5C7A','#A78BFA','#FF8FAB','#4DD0E1','#FFA94D','#A3E635','#6FA8FF'];
 const $=id=>document.getElementById('cb-'+id); const fmtN=n=>new Intl.NumberFormat('es-MX',{maximumFractionDigits:0}).format(n||0); const fmtP=n=>(100*(n||0)).toFixed(1)+'%'; const fmtMoney=n=>new Intl.NumberFormat('es-MX',{style:'currency',currency:'MXN',maximumFractionDigits:0}).format(n||0); const fmtDate=s=>new Date(s+'T12:00:00').toLocaleDateString('es-MX',{month:'short',day:'2-digit'}); const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -1535,7 +1549,10 @@ let agRows=[...ag].sort((a,b)=>b.normality-a.normality).map((a,i)=>[String(i+1),
 let weeks=d.weeks;let heatRows=ag.map(a=>{let cells=weeks.map(w=>{let v=d.weeklyAgency.find(x=>x.key===a.region+'||'+a.name+'||'+w.date);if(!v||v.normality===null)return '<span class="smallnote">—</span>';let p=v.normality;let bg=p<.75?'#7A3440':p<.9?`hsl(${Math.max(0,p-.75)/.15*35},48%,30%)`:`hsl(${90+Math.min(1,(p-.9)/.1)*35},42%,29%)`;return `<span class="heat" style="background:${bg};color:#FFFFFF">${fmtP(p)}</span>`});return [a.region,a.name,...cells,`<span class="pill ${status(a.normality)}">${fmtP(a.normality)}</span>`]});$('heatTable').className='heat-table';$('heatTable').innerHTML=tableHTML(['Región','Agencia',...weeks.map((w,i)=>'S'+(i+1)+' · '+fmtDate(w.date)),'% Mes'],heatRows)}
 function tableHTML(head,rows){return `<thead><tr>${head.map(x=>`<th>${esc(x)}</th>`).join('')}</tr></thead><tbody>${rows.length?rows.map(r=>`<tr>${r.map(x=>`<td>${x}</td>`).join('')}</tr>`).join(''):`<tr><td colspan="${head.length}" class="empty">Sin registros para los filtros seleccionados.</td></tr>`}</tbody>`}
 
-return {init:init, render:render, setThresholds:(g,a)=>{green=g;amber=a;}, hasData:()=>!!DATA.months.length};
+ function heatColor(p){let lo=Math.max(0,Math.min(1,amber)),hi=Math.max(lo+0.0001,Math.min(1,green)),ratio=Math.max(0,Math.min(1,(p-lo)/(hi-lo))),hue=Math.round(ratio*120);return `hsl(${hue},48%,29%)`}
+ const tablesOriginal=tables;
+ tables=function(regs,ag,d){tablesOriginal(regs,ag,d);let weeks=d.weeks,heatRows=ag.map(a=>{let cells=weeks.map(w=>{let v=d.weeklyAgency.find(x=>x.key===a.region+'||'+a.name+'||'+w.date);if(!v||v.normality===null)return '<span class="smallnote">—</span>';let p=v.normality;return `<span class="heat" style="background:${heatColor(p)};color:#FFFFFF" title="${esc(a.name)} · ${esc(fmtDate(w.date))}: ${fmtP(p)} = pagos recibidos ÷ pagos esperados">${fmtP(p)}</span>`});return [a.region,a.name,...cells,`<span class="pill ${status(a.normality)}">${fmtP(a.normality)}</span>`]});$('heatTable').className='heat-table';$('heatTable').innerHTML=tableHTML(['Región','Agencia',...weeks.map((w,i)=>'S'+(i+1)+' · '+fmtDate(w.date)),'% Mes'],heatRows)};
+ return {init:init, render:render, setThresholds:(g,a)=>{green=g;amber=a;}, hasData:()=>!!DATA.months.length};
 }
 
 
@@ -1773,11 +1790,10 @@ return {init:init, render:render, setThresholds:(g,a)=>{green=g;amber=a;}, hasDa
     });
     pop += '<div class="dx-menu-note" id="dx-menu-note">Consultando reportes…</div>';
     tabs.insertAdjacentHTML('beforeend', '<div class="dx-menu" id="dx-rep-menu"><button type="button" class="dx-menu-btn" id="dx-rep-btn" aria-haspopup="true" aria-expanded="false">📊 Reportes ▾</button><div class="dx-menu-pop" role="menu" hidden>' + pop + '</div></div>');
-    adm.insertAdjacentHTML('beforeend', '<section class="admin-card" id="dx-adm-rep"><h3>Reportes mensuales · Cargar información</h3>' +
-      '<p>Aquí se carga la información que después se consulta en <b>Reportes</b>. Elige el reporte y selecciona el archivo; para <b>Cobranza por pago mensual</b> se lee la hoja <b>NORMALIDAD</b> (un mes o varios). Cada mes se guarda por separado y el reporte se va concentrando mes con mes.</p>' +
-      '<div class="dx-adm-row"><label>Reporte <select id="dx-adm-rep-sel">' + REPORTES.map(function (r) { return '<option value="' + e(r.id) + '">' + e(r.nombre) + '</option>'; }).join('') + '</select></label>' +
-      '<input type="file" id="dx-adm-rep-file" accept=".xlsb,.xlsx,.xls"><button type="button" class="admin-btn" id="dx-adm-rep-pub" disabled>Publicar reporte</button></div>' +
-      '<div id="dx-adm-rep-msg" class="dx-adm-info" hidden></div><h4 style="margin:14px 0 4px">Meses publicados</h4><div id="dx-adm-rep-list"></div></section>');
+     adm.insertAdjacentHTML('beforeend', '<section class="admin-card" id="dx-adm-rep"><h3>Reportes mensuales · Publicar nuevo mes</h3>' +
+       '<p>El reporte <b>Cobranza por pago mensual</b> se sincroniza desde la hoja <b>NORMALIDAD</b>. Usa esta carga únicamente para anexar el siguiente mes; los meses existentes no se reemplazan.</p>' +
+       '<div class="dx-adm-row"><input type="file" id="dx-adm-rep-file" accept=".xlsb,.xlsx,.xls"><button type="button" class="admin-btn" id="dx-adm-rep-pub" disabled>Publicar nuevo mes</button></div>' +
+       '<div id="dx-adm-rep-msg" class="dx-adm-info" hidden></div></section>');
   }
   var avail = {};
   function paintMenu(err) {
