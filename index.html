@@ -763,6 +763,12 @@ body.dx-wide .dx-segment{display:flex;justify-content:space-between;align-items:
 body.dx-wide .dx-segment b{color:#fff}
 body.dx-wide .dx-segment .dx-seg-l{font-size:14px;color:#cbd8ee}
 body.dx-wide .dx-segment .dx-seg-r{font-size:12.5px;color:#8fa3c4}
+ body.dx-wide #dx-segment-top{flex:1;min-width:300px;display:flex;align-items:center}
+ body.dx-wide .dashboard-header .hdr-right{order:2}
+ body.dx-wide #dx-segment-top{order:1}
+ body.dx-wide #dx-segment-top .dx-segment{width:100%;margin:0!important;padding:0 12px!important;background:transparent!important;border:0!important;box-shadow:none!important;}
+ body.dx-wide #dx-segment-top .dx-seg-l{font-size:13px;color:#cbd8ee}
+ body.dx-wide #dx-segment-top .dx-corte{margin-left:auto}
 body.dx-wide .dx-corte{display:inline-flex;align-items:center;gap:8px;background:#0b1e3d;border:1px solid #1d4ed8;color:#9ec1ff;padding:7px 12px;border-radius:9px;font-size:12.5px;font-weight:600}
 body.dx-wide .dx-kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;margin-bottom:14px}
 @media (max-width:1320px){body.dx-wide .dx-kpis{grid-template-columns:repeat(3,minmax(0,1fr))}}
@@ -1314,12 +1320,12 @@ body.dx-wide @keyframes dxspin{to{transform:rotate(360deg)}}
     var rol = (typeof ROLE_LABELS !== 'undefined' && ROLE_LABELS[session.role]) ? ROLE_LABELS[session.role] : session.role;
     return '<section class="dx-segment"><div class="dx-seg-l">📍 Segmento activo: <b>' + e(seg) + '</b></div>' +
       (corte ? '<div class="dx-corte">🗓 Corte: ' + e(corte) + '</div>' : '') +
-      '<div class="dx-seg-r"><b>' + e(session.nombre || '') + '</b></div></section>';
+      '</section>';
   }
   function renderSegmentTop() {
     var header=document.querySelector('.dashboard-header'); if(!header) return;
     var top=document.getElementById('dx-segment-top');
-    if(!top){header.insertAdjacentHTML('afterend','<div id="dx-segment-top"></div>');top=document.getElementById('dx-segment-top');}
+    if(!top){header.insertAdjacentHTML('beforeend','<div id="dx-segment-top"></div>');top=document.getElementById('dx-segment-top');}
     top.innerHTML=segmentHtml(); top.hidden=false;
   }
   function scoreHtml(p) { return '<span class="dx-score ' + level(p) + '">' + levelText(p) + '</span>'; }
@@ -1717,8 +1723,8 @@ function tableHTML(head,rows){return `<thead><tr>${head.map(x=>`<th>${esc(x)}</t
   var prepared = null;
   function admEl(id) { return document.getElementById(id); }
   function admMsg(t, cls) { var m = admEl('dx-adm-rep-msg'); if (m) { m.className = 'dx-adm-info' + (cls ? ' dx-adm-' + cls : ''); m.innerHTML = t; m.hidden = !t; } }
-  function admList() {
-    var box = admEl('dx-adm-rep-list'); if (!box) return;
+   function admList() {
+     var box = admEl('dx-adm-rep-list'); if (!box) { api('report_list', { report: 'cobranza_mensual' }).catch(function () {}); return; }
     box.innerHTML = '<span class="dx-spin"></span>Consultando reportes publicados…';
     api('report_list', { report: 'cobranza_mensual' }).then(function (r) { remote.list = (r.items || r.reportes || []).map(function (x) { return { key: x.key, label: x.label }; }); remote.err = ''; })
       .catch(function (x) { remote.list = []; remote.err = x.message || String(x); })
