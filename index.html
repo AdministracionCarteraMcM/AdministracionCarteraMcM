@@ -1655,16 +1655,20 @@ function tableHTML(head,rows){return `<thead><tr>${head.map(x=>`<th>${esc(x)}</t
     });
   }
   function months() {
-    var map = {}, loc = load().meses;
+    var map = {};
     (remote.list || []).forEach(function (m) { map[m.key] = { key: m.key, label: m.label || mesLabel(m.key), src: 'server' }; });
-    Object.keys(loc).forEach(function (k) { if (!map[k]) map[k] = { key: k, label: mesLabel(k), src: 'local' }; });
     return Object.keys(map).sort().reverse().map(function (k) { return map[k]; });
   }
   function dataFor(key) { return cache[key] || load().meses[key] || null; }
   function loadList(done) {
     if (remote.loading) return; remote.loading = true; render();
-    api('report_list', { report: current }).then(function (r) { remote.list = (r.items || r.reportes || []).map(function (x) { return { key: x.key, label: x.label }; }); remote.err = ''; })
-      .catch(function (x) { remote.list = []; remote.err = x.message || String(x); })
+    api('report_bundle', { report: current }).then(function (r) {
+        remote.list = (r.items || r.reportes || []).map(function (x) { return { key: x.key, label: x.label }; });
+        Object.keys(r.data || {}).forEach(function (key) { if (r.data[key]) cache[key] = r.data[key]; });
+        remote.err = '';
+      }).catch(function () {
+        return api('report_list', { report: current }).then(function (r) { remote.list = (r.items || r.reportes || []).map(function (x) { return { key: x.key, label: x.label }; }); remote.err = ''; });
+      }).catch(function (x) { remote.list = []; remote.err = x.message || String(x); })
       .then(function () {
         remote.loading = false; var ms = months();
         if (!selMonth || !ms.some(function (m) { return m.key === selMonth; })) selMonth = ms.length ? ms[0].key : null;
@@ -1673,9 +1677,10 @@ function tableHTML(head,rows){return `<thead><tr>${head.map(x=>`<th>${esc(x)}</t
       });
   }
   function loadData(key, after) {
+    key = String(key || '').trim();
     if (dataFor(key)) { if (after) after(); else render(); return; }
     loadingKey = key; viewErr = ''; setStatus('Cargando ' + mesLabel(key) + '…'); if (!cb) render();
-    api('report_get', { report: current, key: key }).then(function (r) { cache[key] = r.data || r.reporte || null; if (!cache[key]) throw new Error('El servidor no devolvió datos.'); })
+    api('report_get', { report: current, key: key }).then(function (r) { var d = r.data || r.reporte || null; if (!d || String(d.month || key) !== key) throw new Error('El servidor devolvió un mes distinto al solicitado.'); cache[key] = d; })
       .catch(function (x) { viewErr = 'No se pudo cargar el reporte: ' + (x.message || x); })
       .then(function () { loadingKey = null; if (after) after(); else render(); });
   }
@@ -1710,9 +1715,10 @@ function tableHTML(head,rows){return `<thead><tr>${head.map(x=>`<th>${esc(x)}</t
     cb.init({ months: ms, selected: selMonth, onMonth: onMonth, onRefresh: function () { remote.list = null; cache = {}; viewErr = ''; openReport(); } });
   }
   function onMonth(key) {
-    selMonth = key; viewErr = '';
-    if (dataFor(key)) { render(); return; }
-    loadData(key);
+    selMonth = String(key || '').trim(); viewErr = '';
+    cb = null;
+    if (dataFor(selMonth)) { render(); return; }
+    loadData(selMonth, function () { render(); });
   }
   function openReport() {
     viewErr = '';
@@ -1809,7 +1815,7 @@ function tableHTML(head,rows){return `<thead><tr>${head.map(x=>`<th>${esc(x)}</t
     var anyVisible = false;
     REPORTES.forEach(function (rp) {
       var btn = document.querySelector('.dx-menu-item[data-dx-rep="' + rp.id + '"]'); if (!btn) return;
-      var map = {}; (avail[rp.id] || []).forEach(function (m) { map[m.key] = m; }); Object.keys(load().meses).forEach(function (k) { if (!map[k]) map[k] = { key: k, label: mesLabel(k) }; });
+      var map = {}; (avail[rp.id] || []).forEach(function (m) { map[m.key] = m; });
       var keys = Object.keys(map).sort().reverse();
       btn.hidden = !keys.length;
       var sm = btn.querySelector('small'); if (sm && keys.length) sm.textContent = (map[keys[0]].label || mesLabel(keys[0])) + (keys.length > 1 ? ' · ' + keys.length + ' meses' : '');
