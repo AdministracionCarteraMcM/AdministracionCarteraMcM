@@ -448,10 +448,6 @@ body{
 </style>
 <style id="mcm-admin-v2">
 /* ---------- ADMINISTRACIÓN PARALELA ---------- */
- details>summary{color:#163d32;background:#eef7f3;border:1px solid #b9ded1;border-radius:8px;padding:8px 11px;font-weight:800;cursor:pointer;text-shadow:none;}
- details>summary:hover,details[open]>summary{background:#d9f0e7;color:#0b5a43;border-color:#72bea5;}
- body.dx-wide.dx-dark details>summary{color:#e5ecf6;background:#172b49;border-color:#355a88;text-shadow:none;}
- body.dx-wide.dx-dark details>summary:hover,body.dx-wide.dx-dark details[open]>summary{background:#213d67;color:#fff;border-color:#5b8dcc;}
 .admin-wrap{display:grid;grid-template-columns:1.25fr .75fr;gap:16px;margin-bottom:16px;}
 .admin-card{background:var(--bg-card);border-radius:var(--radius);padding:20px;box-shadow:0 1px 4px rgba(0,0,0,.06);border:1px solid var(--border);}
 .admin-card h3{margin:0 0 6px;font-size:15px;}
@@ -715,11 +711,6 @@ body.dx-wide.dx-dark .admin-card input,body.dx-wide.dx-dark .admin-card select,b
 body.dx-wide.dx-dark .admin-btn.secondary,body.dx-wide.dx-dark .export-btn,body.dx-wide.dx-dark .pagination button,body.dx-wide.dx-dark .table-section button{background:#1b2a45!important;color:#cbd8ee!important;border:1px solid #33466b!important}
 body.dx-wide.dx-dark .admin-btn.secondary:hover,body.dx-wide.dx-dark .export-btn:hover{background:#25375a!important}
 body.dx-wide.dx-dark .pd-card details,body.dx-wide.dx-dark .pd-card summary{color:#9ec1ff!important}
- body.dx-wide .pd-table th,body.dx-wide .mc-chart-data table th{background:#f8fafc!important;color:#1d4ed8!important;border-bottom:1px solid #cbd5e1!important;text-shadow:none!important}
- body.dx-wide .pd-table td,body.dx-wide .mc-chart-data table td{background:#fff!important;color:#1f2937!important;border-bottom:1px solid #dbe3ed!important;text-shadow:none!important}
- body.dx-wide .pd-table td small,body.dx-wide .mc-chart-data table td small{color:#475569!important;text-shadow:none!important}
- body.dx-wide.dx-dark .pd-table th,body.dx-wide.dx-dark .mc-chart-data table th{background:#f8fafc!important;color:#1d4ed8!important}
- body.dx-wide.dx-dark .pd-table td,body.dx-wide.dx-dark .mc-chart-data table td{background:#fff!important;color:#1f2937!important}
 body.dx-wide.dx-dark .pd-card svg line[stroke="#e2e8f0"]{stroke:#2a3d5f!important}
 body.dx-wide.dx-dark .pd-card svg text[fill="#94a3b8"]{fill:#8fa3c4!important}
 body.dx-wide.dx-dark .pd-card svg text[fill="#64748b"]{fill:#9db0cf!important}
@@ -763,12 +754,6 @@ body.dx-wide .dx-segment{display:flex;justify-content:space-between;align-items:
 body.dx-wide .dx-segment b{color:#fff}
 body.dx-wide .dx-segment .dx-seg-l{font-size:14px;color:#cbd8ee}
 body.dx-wide .dx-segment .dx-seg-r{font-size:12.5px;color:#8fa3c4}
- body.dx-wide #dx-segment-top{flex:1;min-width:300px;display:flex;align-items:center}
- body.dx-wide .dashboard-header .hdr-right{order:2}
- body.dx-wide #dx-segment-top{order:1}
- body.dx-wide #dx-segment-top .dx-segment{width:100%;margin:0!important;padding:0 12px!important;background:transparent!important;border:0!important;box-shadow:none!important;}
- body.dx-wide #dx-segment-top .dx-seg-l{font-size:13px;color:#cbd8ee}
- body.dx-wide #dx-segment-top .dx-corte{margin-left:auto}
 body.dx-wide .dx-corte{display:inline-flex;align-items:center;gap:8px;background:#0b1e3d;border:1px solid #1d4ed8;color:#9ec1ff;padding:7px 12px;border-radius:9px;font-size:12.5px;font-weight:600}
 body.dx-wide .dx-kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;margin-bottom:14px}
 @media (max-width:1320px){body.dx-wide .dx-kpis{grid-template-columns:repeat(3,minmax(0,1fr))}}
@@ -1202,6 +1187,7 @@ body.dx-wide @keyframes dxspin{to{transform:rotate(360deg)}}
     var wide = isWide() && eligible();
     document.body.classList.toggle('dx-wide', !!wide);
     toggleLabel();
+    try { var atb = document.getElementById('admin-tab-btn'); if (atb && logged() && String(session.role || '').toLowerCase() !== 'admin') atb.style.display = 'none'; } catch (ax) { }
     document.body.classList.toggle('dx-rep-ok', !!wide && REPORT_ROLES.indexOf(String(session.role || '').toLowerCase()) >= 0);
     document.body.classList.toggle('dx-dark', !!wide);
     document.body.classList.toggle('dx-rep-on', !!wide && typeof state !== 'undefined' && state.activeTab === 'reportes');
@@ -1320,13 +1306,7 @@ body.dx-wide @keyframes dxspin{to{transform:rotate(360deg)}}
     var rol = (typeof ROLE_LABELS !== 'undefined' && ROLE_LABELS[session.role]) ? ROLE_LABELS[session.role] : session.role;
     return '<section class="dx-segment"><div class="dx-seg-l">📍 Segmento activo: <b>' + e(seg) + '</b></div>' +
       (corte ? '<div class="dx-corte">🗓 Corte: ' + e(corte) + '</div>' : '') +
-      '</section>';
-  }
-  function renderSegmentTop() {
-    var header=document.querySelector('.dashboard-header'); if(!header) return;
-    var top=document.getElementById('dx-segment-top');
-    if(!top){header.insertAdjacentHTML('beforeend','<div id="dx-segment-top"></div>');top=document.getElementById('dx-segment-top');}
-    top.innerHTML=segmentHtml(); top.hidden=false;
+      '<div class="dx-seg-r">Acceso ' + e(rol) + ' — <b>' + e(session.nombre || '') + '</b></div></section>';
   }
   function scoreHtml(p) { return '<span class="dx-score ' + level(p) + '">' + levelText(p) + '</span>'; }
   function treeRows(node) {
@@ -1400,16 +1380,14 @@ body.dx-wide @keyframes dxspin{to{transform:rotate(360deg)}}
     var host = document.getElementById('tab-indicadores');
     if (!host) return;
     var old = host.querySelector('.dx-wrap'); if (old) old.remove();
-     var segmentTop=document.getElementById('dx-segment-top');
-     if (!eligible() || !isWide()) { if(segmentTop) segmentTop.hidden=true; return; }
+    if (!eligible() || !isWide()) return;
     try { postProcess(host); } catch (pe) { if (window.console) console.error(pe); }
     try {
       var d = currentRows();
       var tree = buildTree(d.roster);
       cache = { d: d, tree: tree };
       if (!treeSeeded) { expanded = new Set(['root'].concat(tree.territorios.map(function (t) { return t.id; })).concat(tree.regions.map(function (r) { return r.id; }))); treeSeeded = true; }
-       renderSegmentTop();
-       var html = '<div class="dx-wrap">' + kpisHtml(d) + panelsHtml() + '</div>';
+      var html = '<div class="dx-wrap">' + segmentHtml() + kpisHtml(d) + panelsHtml() + '</div>';
       host.insertAdjacentHTML('afterbegin', html);
     } catch (err) {
       if (window.console) console.error('Vista de escritorio:', err);
@@ -1503,7 +1481,7 @@ body.dx-wide @keyframes dxspin{to{transform:rotate(360deg)}}
    - Reportes: solo se elige un reporte (menú) y un mes; los datos se consultan al servidor.
    - Administración: ahí se carga el archivo y se publica (hoja NORMALIDAD, un mes o varios).
    Acciones en Apps Script: report_list, report_get, report_save, report_delete.
-    Si el servidor aún no las tiene, la carga queda como respaldo persistente solo en este navegador (localStorage); no sustituye la publicación compartida.
+   Si el servidor aún no las tiene, la carga queda solo en este navegador (sessionStorage).
    Reporte 1: Cobranza por pago mensual (dashboard portado del HTML "Cobranza_por_pago_mensual").
    Para agregar otro reporte: nueva entrada en REPORTES + su lector de archivo + su vista.
    ===================================================================== */
@@ -1516,7 +1494,6 @@ body.dx-wide @keyframes dxspin{to{transform:rotate(360deg)}}
 
   var CB_HTML = "<div class=\"wrap\"><header class=\"top\"><div><div class=\"eyebrow\">MCM · INTELIGENCIA DE COBRANZA</div><h1 class=\"title\">COBRANZA POR PAGO MENSUAL</h1><div class=\"subtitle\" id=\"cb-subtitle\">Normalidad, recuperación y desempeño por región y agencia</div></div>\n<div class=\"controls\"><div><label for=\"cb-month\">Corte mensual</label><select id=\"cb-month\"></select></div><div><label for=\"cb-region\">Región</label><select id=\"cb-region\"><option value=\"\">Todas las regiones</option></select></div><div><label for=\"cb-greenThreshold\">Verde ≥</label><input id=\"cb-greenThreshold\" type=\"number\" min=\"0\" max=\"1\" step=\"0.01\" value=\"0.95\" style=\"min-width:82px;width:82px\"></div><div><label for=\"cb-amberThreshold\">Ámbar ≥</label><input id=\"cb-amberThreshold\" type=\"number\" min=\"0\" max=\"1\" step=\"0.01\" value=\"0.90\" style=\"min-width:82px;width:82px\"></div><div><label>&nbsp;</label><button type=\"button\" class=\"cb-btn\" id=\"cb-refresh\">Actualizar</button></div></div></header>\n<section class=\"kpis\" id=\"cb-kpis\"></section>\n<section class=\"grid\">\n<article class=\"panel\"><h2 class=\"ptitle\">% de normalidad por región vs. promedio MCM (eje desde 70%)</h2><svg class=\"chart\" id=\"cb-c1\" viewBox=\"0 0 700 390\" role=\"img\"></svg></article>\n<article class=\"panel\"><h2 class=\"ptitle\">Tendencia semanal de % de normalidad por región (eje desde 75%)</h2><svg class=\"chart\" id=\"cb-c2\" viewBox=\"0 0 700 390\" role=\"img\"></svg></article>\n<article class=\"panel\"><h2 class=\"ptitle\">$ esperado: recibido vs. faltante y % de recuperación por región</h2><svg class=\"chart\" id=\"cb-c3\" viewBox=\"0 0 700 390\" role=\"img\"></svg></article>\n<article class=\"panel\"><h2 class=\"ptitle\">% de normalidad por región y semana (eje desde 70%)</h2><svg class=\"chart\" id=\"cb-c4\" viewBox=\"0 0 700 390\" role=\"img\"></svg></article>\n<article class=\"panel\"><h2 class=\"ptitle\">Ranking de agencias por % de normalidad mensual</h2><div class=\"pdesc\">Orden descendente. Colores según umbrales editables en el dashboard.</div><svg class=\"chart tall\" id=\"cb-c5\" viewBox=\"0 0 700 640\" role=\"img\"></svg></article>\n<article class=\"panel\"><h2 class=\"ptitle\">¿Quién mejoró o empeoró?</h2><div class=\"pdesc\">Cambio en puntos porcentuales: última semana con datos vs. primera semana con datos.</div><svg class=\"chart tall\" id=\"cb-c6\" viewBox=\"0 0 700 640\" role=\"img\"></svg></article>\n<article class=\"panel wide\"><h2 class=\"ptitle\">Detalle por región</h2><div class=\"pdesc\">Agregados calculados desde los ejecutivos del concentrado.</div><div class=\"tablewrap\"><table id=\"cb-regionTable\"></table></div></article>\n<article class=\"panel wide\"><h2 class=\"ptitle\">Ranking y detalle por agencia</h2><div class=\"pdesc\">Filtros de región, agencia y búsqueda se aplican a este detalle y a los gráficos de agencia.</div><div class=\"tablewrap\"><table id=\"cb-agencyTable\"></table></div></article>\n<article class=\"panel wide\"><h2 class=\"ptitle\">Mapa de calor · % de normalidad por agencia y semana</h2><div class=\"pdesc\">Escala visual orientativa 75% → 90% → 100%. Celda vacía = semana sin pagos esperados.</div><div class=\"tablewrap\"><table id=\"cb-heatTable\"></table></div></article>\n</section>\n<div class=\"footnote\" id=\"cb-footnote\"></div>\n<div class=\"footnote\" id=\"cb-footnote\"></div></div>";
 
-  CB_HTML=CB_HTML.replace('Escala visual orientativa 75% → 90% → 100%. Celda vacía = semana sin pagos esperados.','Cada celda calcula pagos recibidos ÷ pagos esperados por agencia y semana. Los colores siguen los umbrales configurados. Celda vacía = semana sin pagos esperados.');
   function cbCreate(DATA, SEM) {
 const COLORS=['#3A86FF','#22D3A5','#FFC53D','#FF5C7A','#A78BFA','#FF8FAB','#4DD0E1','#FFA94D','#A3E635','#6FA8FF'];
 const $=id=>document.getElementById('cb-'+id); const fmtN=n=>new Intl.NumberFormat('es-MX',{maximumFractionDigits:0}).format(n||0); const fmtP=n=>(100*(n||0)).toFixed(1)+'%'; const fmtMoney=n=>new Intl.NumberFormat('es-MX',{style:'currency',currency:'MXN',maximumFractionDigits:0}).format(n||0); const fmtDate=s=>new Date(s+'T12:00:00').toLocaleDateString('es-MX',{month:'short',day:'2-digit'}); const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -1535,7 +1512,7 @@ function line(x1,y1,x2,y2,color='#e7edf4',w=1,dash=''){return `<line x1="${x1}" 
 function render(){current=DATA.months.find(x=>x.month===$('month').value)||DATA.months.at(-1);let regs=current.regions, agencies=current.agencies;let selR=$('region').value;
 let regOpts=['<option value="">Todas las regiones</option>',...regs.map(r=>`<option value="${esc(r.name)}">${esc(r.name)}</option>`)];$('region').innerHTML=regOpts.join('');$('region').value=selR;
 let fregs=regs.filter(r=>!selR||r.name===selR), fag=agencies.filter(a=>!selR||a.region===selR);
-$('subtitle').textContent=new Date(current.month+'-15T12:00:00').toLocaleDateString('es-MX',{month:'long',year:'numeric'})+' · '+fmtN(current.rows)+' registros de ejecutivo';
+$('subtitle').textContent=new Date(current.month+'-15T12:00:00').toLocaleDateString('es-MX',{month:'long',year:'numeric'})+' · '+fmtN(current.rows)+' registros de ejecutivo · '+current.weeks.length+(current.weeks.length===1?' corte semanal':' cortes semanales')+' ('+current.weeks.map(w=>fmtDate(w.date)).join(', ')+')'+(current.weeks.length<2?' · ⚠ solo 1 corte: las gráficas semanales necesitan 4 o 5 cortes en la hoja NORMALIDAD':'');$('subtitle').style.color=current.weeks.length<2?'#FFC53D':'';
 const t=current.total; const greenN=agencies.filter(a=>a.normality>=green).length, amberN=agencies.filter(a=>a.normality<green&&a.normality>=amber).length, redN=agencies.filter(a=>a.normality<amber).length;
 $('kpis').innerHTML=[['NORMALIDAD MCM',fmtP(t.normality),'Recibidos / esperados',''],['% RECUPERACIÓN $',fmtP(t.recovery),'Recibido esperado / $ esperado',''],['$ ESPERADO',fmtMoney(t.expectedAmt),'Importe esperado del mes',''],['AGENCIAS EN VERDE',greenN,'≥ '+fmtP(green),'green'],['AGENCIAS EN ÁMBAR',amberN,fmtP(amber)+' a < '+fmtP(green),'amber'],['AGENCIAS EN ROJO',redN,'< '+fmtP(amber),'red']].map(x=>`<div class="kpi ${x[3]}"><div class="klabel">${x[0]}</div><div class="kvalue">${x[1]}</div><div class="kfoot">${x[2]}</div></div>`).join('');
 chart1(fregs,t.normality);chart2(fregs,current);chart3(fregs);chart4(fregs,current);chart5(fag);chart6(fag,current);tables(fregs,fag,current);$('footnote').textContent=`Fuente: ${DATA.source}. Corte seleccionado: ${fmtN(current.rows)} registros de ejecutivo, ${regs.length} regiones y ${agencies.length} agencias. Los porcentajes se recalculan como razones de sumas; no se promedian porcentajes individuales. Umbrales de color iniciales: verde ≥ ${fmtP(green)}; ámbar ≥ ${fmtP(amber)} y < ${fmtP(green)}; rojo < ${fmtP(amber)}.`}
@@ -1545,20 +1522,33 @@ function panelBg(){return '<rect x="0" y="0" width="700" height="390" fill="#162
 function percentAxes(min,max,left=52,right=680,top=28,bottom=258){let out=panelBg();for(let i=0;i<=5;i++){let v=min+(max-min)*i/5,y=bottom-i*(bottom-top)/5;out+=line(left,y,right,y,'#304563',1,'3 3')+svgLabel(left-9,y+4,(v*100).toFixed(0)+'%','end',11,'#A8B9D6')}return out}
 function xRegionLabels(regs,centers,y){let z='';regs.forEach((r,i)=>{z+=`<text x="${centers[i]}" y="${y}" transform="rotate(-45 ${centers[i]} ${y})" text-anchor="end" font-size="11" fill="#A8B9D6" font-family="Segoe UI,Arial">${esc(r.name)}</text>`});return z}
 function chart1(regs,avg){let min=.70,max=1.00,top=28,bottom=258,left=52,right=684,s=percentAxes(min,max,left,right,top,bottom);s+='<defs><linearGradient id="normalityBars" x1="0" y1="1" x2="0" y2="0"><stop offset="0%" stop-color="#3987FF"/><stop offset="100%" stop-color="#22D3A5"/></linearGradient></defs>';let n=regs.length,slot=(right-left)/Math.max(n,1),bar=Math.min(48,slot*.70),centers=[];regs.forEach((r,i)=>{let cx=left+slot*(i+.5),v=Math.max(min,Math.min(max,r.normality)),y=bottom-(v-min)/(max-min)*(bottom-top);centers.push(cx);s+=`<rect x="${cx-bar/2}" y="${y}" width="${bar}" height="${bottom-y}" fill="url(#normalityBars)"><title>${esc(r.name)}: ${fmtP(r.normality)}</title></rect>`+svgLabel(cx,y-8,fmtP(r.normality),'middle',12,'#F4F7FC','font-weight="700"')});let ay=bottom-(avg-min)/(max-min)*(bottom-top);s+=line(left,ay,right,ay,'#FFC43D',3,'10 8')+xRegionLabels(regs,centers,298);s+=`<line x1="230" y1="377" x2="265" y2="377" stroke="#22B8E8" stroke-width="4"/><text x="272" y="381" fill="#F4F7FC" font-size="11">% Normalidad</text><line x1="365" y1="377" x2="400" y2="377" stroke="#FFC43D" stroke-width="3" stroke-dasharray="10 7"/><text x="408" y="381" fill="#F4F7FC" font-size="11">Promedio MCM</text>`;$('c1').innerHTML=s}
-function chart2(regs,d){let weeks=d.weeks,min=.75,max=1,top=28,bottom=258,left=52,right=520,s=percentAxes(min,max,left,right,top,bottom);let xAt=j=>left+24+j*(right-left-48)/Math.max(weeks.length-1,1);weeks.forEach((w,j)=>s+=svgLabel(xAt(j),278,'% S'+(j+1),'middle',11,'#A8B9D6'));regs.forEach((r,i)=>{let pts=[];weeks.forEach((w,j)=>{let v=d.weeklyRegion.find(x=>x.key===r.name+'||'+w.date);if(v&&v.normality!==null)pts.push([xAt(j),bottom-(Math.max(min,Math.min(max,v.normality))-min)/(max-min)*(bottom-top)])});if(pts.length){let c=EXCEL_COLORS[i%EXCEL_COLORS.length];s+=`<polyline points="${pts.map(p=>p.join(',')).join(' ')}" fill="none" stroke="${c}" stroke-width="2.8"/>`;pts.forEach(p=>s+=`<circle cx="${p[0]}" cy="${p[1]}" r="4.5" fill="${c}"/>`)}});let ly=78;regs.forEach((r,i)=>{let c=EXCEL_COLORS[i%EXCEL_COLORS.length];s+=line(542,ly,577,ly,c,3)+`<circle cx="559" cy="${ly}" r="3.5" fill="${c}"/>`+svgLabel(584,ly+4,r.name,'start',11,'#F1F4FA');ly+=22});let m=d.total.normality,my=bottom-(Math.max(min,Math.min(max,m))-min)/(max-min)*(bottom-top);s+=line(left,my,right,my,'#FFFFFF',3,'9 7')+line(542,ly,577,ly,'#FFFFFF',3,'9 7')+svgLabel(584,ly+4,'MCM (total)','start',11,'#F1F4FA');$('c2').innerHTML=s}
+function chart2(regs,d){let weeks=d.weeks,min=.75,max=1,top=28,bottom=258,left=52,right=520,s=percentAxes(min,max,left,right,top,bottom);let N=Math.max(5,weeks.length);let xAt=j=>left+24+j*(right-left-48)/Math.max(N-1,1);for(let j=0;j<N;j++)s+=svgLabel(xAt(j),278,'% S'+(j+1),'middle',11,'#A8B9D6');regs.forEach((r,i)=>{let pts=[];weeks.forEach((w,j)=>{let v=d.weeklyRegion.find(x=>x.key===r.name+'||'+w.date);if(v&&v.normality!==null)pts.push([xAt(j),bottom-(Math.max(min,Math.min(max,v.normality))-min)/(max-min)*(bottom-top)])});if(pts.length){let c=EXCEL_COLORS[i%EXCEL_COLORS.length];s+=`<polyline points="${pts.map(p=>p.join(',')).join(' ')}" fill="none" stroke="${c}" stroke-width="2.8"/>`;pts.forEach(p=>s+=`<circle cx="${p[0]}" cy="${p[1]}" r="4.5" fill="${c}"/>`)}});let ly=78;regs.forEach((r,i)=>{let c=EXCEL_COLORS[i%EXCEL_COLORS.length];s+=line(542,ly,577,ly,c,3)+`<circle cx="559" cy="${ly}" r="3.5" fill="${c}"/>`+svgLabel(584,ly+4,r.name,'start',11,'#F1F4FA');ly+=22});let m=d.total.normality,my=bottom-(Math.max(min,Math.min(max,m))-min)/(max-min)*(bottom-top);s+=line(left,my,right,my,'#FFFFFF',3,'9 7')+line(542,ly,577,ly,'#FFFFFF',3,'9 7')+svgLabel(584,ly+4,'MCM (total)','start',11,'#F1F4FA');$('c2').innerHTML=s}
 function chart3(regs){let maxAmt=Math.max(1,...regs.map(r=>r.expectedAmt)),ceil=Math.ceil(maxAmt/1e6),top=28,bottom=258,left=55,right=650,n=regs.length,slot=(right-left)/Math.max(n,1),bar=Math.min(42,slot*.68),s=panelBg(),centers=[];for(let i=0;i<=4;i++){let val=ceil*i/4,y=bottom-i*(bottom-top)/4;s+=line(left,y,right,y,'#304563',1,'3 3')+svgLabel(left-8,y+4,'$'+val.toFixed(0)+'M','end',11,'#A8B9D6')+svgLabel(right+8,y+4,(70+i*7.5).toFixed(0)+'%','start',11,'#FFC43D')}let pts=[];regs.forEach((r,i)=>{let cx=left+slot*(i+.5),scale=(bottom-top)/(ceil*1e6),rec=r.receivedExpected*scale,miss=r.missing*scale,yRec=bottom-rec,yMiss=yRec-miss;centers.push(cx);s+=`<rect x="${cx-bar/2}" y="${yRec}" width="${bar}" height="${rec}" fill="#347FF0"><title>Recibido esperado ${fmtMoney(r.receivedExpected)}</title></rect><rect x="${cx-bar/2}" y="${yMiss}" width="${bar}" height="${miss}" fill="#FF5D83"><title>Faltante ${fmtMoney(r.missing)}</title></rect>`;let ry=bottom-(Math.max(.70,Math.min(1,r.recovery))-.70)/.30*(bottom-top);pts.push([cx,ry]);s+=svgLabel(cx,yMiss-7,fmtP(r.recovery),'middle',11,'#FFC43D','font-weight="700"')});s+=`<polyline points="${pts.map(p=>p.join(',')).join(' ')}" fill="none" stroke="#FFC43D" stroke-width="3"/>`;pts.forEach(p=>s+=`<path d="M ${p[0]} ${p[1]-5} L ${p[0]+5} ${p[1]} L ${p[0]} ${p[1]+5} L ${p[0]-5} ${p[1]} Z" fill="#FFC43D"/>`);s+=xRegionLabels(regs,centers,292)+`<line x1="120" y1="377" x2="150" y2="377" stroke="#347FF0" stroke-width="5"/><text x="157" y="381" fill="#F1F4FA" font-size="11">$ Recibido (de lo esperado)</text><line x1="330" y1="377" x2="360" y2="377" stroke="#FF5D83" stroke-width="6"/><text x="367" y="381" fill="#F1F4FA" font-size="11">$ Faltante</text><line x1="470" y1="377" x2="500" y2="377" stroke="#FFC43D" stroke-width="3"/><path d="M 485 372 L 490 377 L 485 382 L 480 377 Z" fill="#FFC43D"/><text x="507" y="381" fill="#F1F4FA" font-size="11">% Recuperación $</text>`;$('c3').innerHTML=s}
 function chart4(regs,d){let weeks=d.weeks,n=regs.length,top=28,bottom=258,left=52,right=684,min=.70,max=1.00,s=percentAxes(min,max,left,right,top,bottom),slot=(right-left)/Math.max(n,1),group=slot*.82,bar=group/Math.max(weeks.length,1),centers=[];regs.forEach((r,i)=>{let cx=left+slot*(i+.5);centers.push(cx);weeks.forEach((w,j)=>{let v=d.weeklyRegion.find(x=>x.key===r.name+'||'+w.date);if(!v||v.normality===null)return;let val=Math.max(min,Math.min(max,v.normality)),y=bottom-(val-min)/(max-min)*(bottom-top),x=cx-group/2+j*bar;s+=`<rect x="${x}" y="${y}" width="${Math.max(2,bar*.9)}" height="${bottom-y}" fill="${EXCEL_COLORS[j%EXCEL_COLORS.length]}"><title>${esc(r.name)} · S${j+1}: ${fmtP(v.normality)}</title></rect>`})});s+=xRegionLabels(regs,centers,298);let totalWeeks=Math.min(weeks.length,5),legendWidth=totalWeeks*72,start=350-legendWidth/2;weeks.forEach((w,j)=>{let x=start+j*72,c=EXCEL_COLORS[j%EXCEL_COLORS.length];s+=`<rect x="${x}" y="369" width="8" height="8" fill="${c}"/>`+svgLabel(x+13,378,'% S'+(j+1),'start',11,'#F1F4FA')});$('c4').innerHTML=s}
-function chart5(ag){let rows=[...ag].sort((a,b)=>b.normality-a.normality);let s='';let max=Math.max(1,...rows.map(x=>x.normality));rows.forEach((a,i)=>{let y=20+i*16,h=10,w=a.normality/max*475,c=a.normality>=green?'#19966b':a.normality>=amber?'#e5a12a':'#d65b5b';s+=svgText(2,y+9,(i+1)+'. '+(a.name.length>22?a.name.slice(0,21)+'…':a.name),'start',9)+`<rect x="185" y="${y}" width="${w}" height="${h}" rx="3" fill="${c}"/><title>${esc(a.region)} · ${esc(a.name)} ${fmtP(a.normality)}</title>`+svgText(680,y+9,fmtP(a.normality),'end',9,'#E8EEF9')});$('c5').innerHTML=s}
-function chart6(ag,d){let rows=ag.map(a=>{let ws=d.weeks.map(w=>{let x=d.weeklyAgency.find(x=>x.key===a.region+'||'+a.name+'||'+w.date);return x&&x.normality!==null?x.normality:null}).filter(x=>x!==null);return {...a,delta:ws.length>1?(ws.at(-1)-ws[0])*100:null}}).filter(a=>a.delta!==null).sort((a,b)=>b.delta-a.delta);let max=Math.max(1,...rows.map(a=>Math.abs(a.delta)));let s='<rect x="0" y="0" width="700" height="640" fill="#16233B"/>'+line(355,15,355,620,'#8FA3C4',1);rows.forEach((a,i)=>{let y=20+i*16,w=Math.abs(a.delta)/max*210,x=a.delta>=0?355:355-w,c=a.delta>=0?'#19966b':'#d65b5b';s+=svgText(2,y+9,a.name.length>22?a.name.slice(0,21)+'…':a.name,'start',9,'#E8EEF9')+`<rect x="${x}" y="${y}" width="${w}" height="10" rx="3" fill="${c}"/>`+svgText(690,y+9,(a.delta>0?'+':'')+a.delta.toFixed(1)+' pp','end',9,c)});$('c6').innerHTML=s}
+function niceTicks(lo,hi,fixed){let span=Math.max(hi-lo,1e-6),step=fixed||[0.5,1,2,5,10,20,50].find(q=>span/q<=8)||50,a=Math.floor(lo/step)*step,b=Math.ceil(hi/step)*step,t=[];for(let v=a;v<=b+1e-9;v+=step)t.push(Math.round(v*1000)/1000);return {t,a:t[0],b:t[t.length-1]}}
+function fitChart(id,H){let el=$(id);el.setAttribute('viewBox','0 0 700 '+H);el.style.height='auto';el.style.minHeight='0'}
+function hbarChart(id,rows,o){/* rows:[{label,tip,v,color,txt,txtColor}] ; o:{lo,hi,fmtTick,zero} */
+  const RH=22,top=12,left=168,right=612,H=top+rows.length*RH+36,nt=niceTicks(o.lo,o.hi,o.step),span=nt.b-nt.a||1,X=v=>left+(v-nt.a)/span*(right-left);
+  let s='<rect x="0" y="0" width="700" height="'+H+'" fill="#16233B"/>';
+  nt.t.forEach(v=>{let x=X(v);s+=line(x,top,x,H-30,'#304563',1,'3 3')+svgLabel(x,H-12,o.fmtTick(v),'middle',11,'#A8B9D6')});
+  if(o.zero!=null)s+=line(X(o.zero),top,X(o.zero),H-30,'#8FA3C4',1.4);
+  rows.forEach((r,i)=>{let y=top+i*RH+3,x0=X(o.zero!=null?o.zero:nt.a),x1=X(Math.max(r.v,nt.a)),xa=Math.min(x0,x1),w=Math.max(Math.abs(x1-x0),r.v===o.zero?0:2);
+    s+=svgLabel(left-10,y+13,r.label.length>24?r.label.slice(0,23)+'…':r.label,'end',11,'#E8EEF9')+`<rect x="${xa}" y="${y}" width="${w}" height="16" rx="3" fill="${r.color}"/><title>${esc(r.tip)}</title>`;
+    let neg=o.zero!=null&&r.v<o.zero;s+=svgLabel(neg?xa-6:xa+w+6,y+13,r.txt,neg?'end':'start',11,r.txtColor||'#FFFFFF','font-weight="700"')});
+  $(id).innerHTML=s;fitChart(id,H)}
+function chart5(ag){let rows=[...ag].sort((a,b)=>b.normality-a.normality||b.expected-a.expected);if(!rows.length){$('c5').innerHTML='';return}
+  let ok=rows.filter(a=>a.expected>0),mn=Math.min(...(ok.length?ok:rows).map(a=>a.normality)),lo=Math.max(0,Math.floor((Math.min(mn,0.9)-0.02)*10)/10);
+  hbarChart('c5',rows.map(a=>({label:a.name,tip:a.region+' · '+a.name+' '+fmtP(a.normality),v:a.normality,color:a.normality>=green?'#22D3A5':a.normality>=amber?'#FFC53D':'#FF5C7A',txt:fmtP(a.normality)})),{lo:lo,hi:1,step:0.1,fmtTick:v=>Math.round(v*100)+'%'})}
+function chart6(ag,d){let rows=ag.map(a=>{let ws=d.weeks.map(w=>{let x=d.weeklyAgency.find(x=>x.key===a.region+'||'+a.name+'||'+w.date);return x&&x.normality!==null?x.normality:null}).filter(x=>x!==null);return {...a,delta:ws.length>1?(ws.at(-1)-ws[0])*100:null}}).filter(a=>a.delta!==null).sort((a,b)=>b.delta-a.delta);
+  if(!rows.length){$('c6').innerHTML='<rect x="0" y="0" width="700" height="140" fill="#16233B"/>'+svgText(350,74,'Se necesitan al menos 2 cortes semanales con datos para comparar','middle',13,'#A8B9D6');fitChart('c6',140);return}
+  let mx=Math.max(...rows.map(a=>a.delta)),mn=Math.min(...rows.map(a=>a.delta));
+  hbarChart('c6',rows.map(a=>({label:a.name,tip:a.region+' · '+a.name+': '+(a.delta>0?'+':'')+a.delta.toFixed(1)+' pp',v:a.delta,color:a.delta>=0?'#22D3A5':'#FF5C7A',txt:Math.abs(a.delta)<0.05?'0.0':(a.delta>0?'+':'')+a.delta.toFixed(1)})),{lo:Math.min(mn,0)-1,hi:Math.max(mx,0)+2,fmtTick:v=>String(v),zero:0})}
 function tables(regs,ag,d){let regHead=['Región','Esp.','Rec.','% Normalidad','$ Esperado','$ Rec. esperada','$ No esperada','$ Faltante','% Recuperación $'];let regRows=[...regs].sort((a,b)=>b.normality-a.normality).map(r=>[r.name,fmtN(r.expected),fmtN(r.received),`<span class="pill ${status(r.normality)}">${fmtP(r.normality)}</span>`,fmtMoney(r.expectedAmt),fmtMoney(r.receivedExpected),fmtMoney(r.receivedUnexpected),fmtMoney(r.missing),fmtP(r.recovery)]);$('regionTable').innerHTML=tableHTML(regHead,regRows);
 let agRows=[...ag].sort((a,b)=>b.normality-a.normality).map((a,i)=>[String(i+1),a.region,a.name,fmtN(a.expected),fmtN(a.received),`<span class="pill ${status(a.normality)}">${fmtP(a.normality)}</span>`,fmtMoney(a.expectedAmt),fmtMoney(a.receivedExpected),fmtMoney(a.missing),fmtP(a.recovery)]);$('agencyTable').innerHTML=tableHTML(['#','Región','Agencia','Esp.','Rec.','% Normalidad','$ Esperado','$ Rec. esperada','$ Faltante','% Recuperación $'],agRows);
 let weeks=d.weeks;let heatRows=ag.map(a=>{let cells=weeks.map(w=>{let v=d.weeklyAgency.find(x=>x.key===a.region+'||'+a.name+'||'+w.date);if(!v||v.normality===null)return '<span class="smallnote">—</span>';let p=v.normality;let bg=p<.75?'#7A3440':p<.9?`hsl(${Math.max(0,p-.75)/.15*35},48%,30%)`:`hsl(${90+Math.min(1,(p-.9)/.1)*35},42%,29%)`;return `<span class="heat" style="background:${bg};color:#FFFFFF">${fmtP(p)}</span>`});return [a.region,a.name,...cells,`<span class="pill ${status(a.normality)}">${fmtP(a.normality)}</span>`]});$('heatTable').className='heat-table';$('heatTable').innerHTML=tableHTML(['Región','Agencia',...weeks.map((w,i)=>'S'+(i+1)+' · '+fmtDate(w.date)),'% Mes'],heatRows)}
 function tableHTML(head,rows){return `<thead><tr>${head.map(x=>`<th>${esc(x)}</th>`).join('')}</tr></thead><tbody>${rows.length?rows.map(r=>`<tr>${r.map(x=>`<td>${x}</td>`).join('')}</tr>`).join(''):`<tr><td colspan="${head.length}" class="empty">Sin registros para los filtros seleccionados.</td></tr>`}</tbody>`}
 
- function heatColor(p){let lo=Math.max(0,Math.min(1,amber)),hi=Math.max(lo+0.0001,Math.min(1,green)),ratio=Math.max(0,Math.min(1,(p-lo)/(hi-lo))),hue=Math.round(ratio*120);return `hsl(${hue},48%,29%)`}
- const tablesOriginal=tables;
- tables=function(regs,ag,d){tablesOriginal(regs,ag,d);let weeks=d.weeks,heatRows=ag.map(a=>{let cells=weeks.map(w=>{let v=d.weeklyAgency.find(x=>x.key===a.region+'||'+a.name+'||'+w.date);if(!v||v.normality===null)return '<span class="smallnote">—</span>';let p=v.normality;return `<span class="heat" style="background:${heatColor(p)};color:#FFFFFF" title="${esc(a.name)} · ${esc(fmtDate(w.date))}: ${fmtP(p)} = pagos recibidos ÷ pagos esperados">${fmtP(p)}</span>`});return [a.region,a.name,...cells,`<span class="pill ${status(a.normality)}">${fmtP(a.normality)}</span>`]});$('heatTable').className='heat-table';$('heatTable').innerHTML=tableHTML(['Región','Agencia',...weeks.map((w,i)=>'S'+(i+1)+' · '+fmtDate(w.date)),'% Mes'],heatRows)};
- return {init:init, render:render, setThresholds:(g,a)=>{green=g;amber=a;}, hasData:()=>!!DATA.months.length};
+return {init:init, render:render, setThresholds:(g,a)=>{green=g;amber=a;}, hasData:()=>!!DATA.months.length};
 }
 
 
@@ -1574,8 +1564,8 @@ function tableHTML(head,rows){return `<thead><tr>${head.map(x=>`<th>${esc(x)}</t
   function e(s) { return X.e(s); }
   function N(v) { v = Number(v); return isFinite(v) ? v : 0; }
   function user() { return (typeof session !== 'undefined' && session && (session.username || session.nombre)) || 'u'; }
-   function load() { try { return JSON.parse(localStorage.getItem(STORE + user()) || '{"meses":{}}'); } catch (x) { return { meses: {} }; } }
-   function save(o) { try { localStorage.setItem(STORE + user(), JSON.stringify(o)); return true; } catch (x) { return false; } }
+  function load() { try { return JSON.parse(sessionStorage.getItem(STORE + user()) || '{"meses":{}}'); } catch (x) { return { meses: {} }; } }
+  function save(o) { try { sessionStorage.setItem(STORE + user(), JSON.stringify(o)); return true; } catch (x) { return false; } }
   function mesLabel(key) { return MESES[+key.slice(5, 7) - 1] + ' ' + key.slice(0, 4); }
   function r2(v) { return Math.round(v * 100) / 100; }
   function r6(v) { return v == null ? null : Math.round(v * 1e6) / 1e6; }
@@ -1598,30 +1588,43 @@ function tableHTML(head,rows){return `<thead><tr>${head.map(x=>`<th>${esc(x)}</t
     }
     return null;
   }
+  // Mes al que pertenece un corte semanal: el mes en que cae el miércoles de esa semana (lunes a viernes).
+  // Así el corte del 1-may cuenta para abril y el del 2-oct para septiembre (igual que en el reporte original).
+  function monthOfCut(iso) {
+    var d = new Date(iso + 'T00:00:00Z'), dow = (d.getUTCDay() + 6) % 7;
+    d.setUTCDate(d.getUTCDate() - dow + 2); return d.toISOString().slice(0, 7);
+  }
   function parseNormalidad(wb) {
     if (typeof XLSX === 'undefined') throw new Error('No se cargó la librería para leer Excel.');
     var ws = findSheet(wb, 'NORMALIDAD'); if (!ws) throw new Error('No encontré la hoja "NORMALIDAD".');
     var A = aoa(ws), hi = -1, i, r;
     for (i = 0; i < A.length; i++) { r = A[i]; if (r && canon(r[0]) === 'REGION' && canon(r[1]) === 'AGENCIA' && canon(r[2]) === 'EJECUTIVO') { hi = i; break; } }
     if (hi < 0) throw new Error('No encontré los encabezados REGION / AGENCIA / EJECUTIVO en la hoja NORMALIDAD.');
-    var col = {}; A[hi].forEach(function (h, j) { if (h != null) col[canon(h)] = j; });
-    ['ESPERADO', 'RECIBIDO', '$ ESPERADA', '$ ESPERADA RECIBIDA', '$ RECIBIDA NO ESPERADA'].forEach(function (k) { if (col[k] == null) throw new Error('Falta la columna "' + k + '" en la hoja NORMALIDAD.'); });
-    var weekCol = col['CORTE SEMANAL'];
-    var monthCol = col['CORTE MES'];
-    if (weekCol == null) throw new Error('Falta la columna "CORTE SEMANAL" en la hoja NORMALIDAD.');
-    if (monthCol == null) throw new Error('Falta la columna "CORTE MES" en la hoja NORMALIDAD.');
+    var col = {}; A[hi].forEach(function (h, j) { if (h != null && col[canon(h)] == null) col[canon(h)] = j; });
+    ['ESPERADO', 'RECIBIDO', '$ ESPERADA', '$ ESPERADA RECIBIDA', '$ RECIBIDA NO ESPERADA', 'CORTE'].forEach(function (k) { if (col[k] == null) throw new Error('Falta la columna "' + k + '" en la hoja NORMALIDAD.'); });
+    // Columna del CORTE SEMANAL: de todas las columnas de fecha (CORTE, SEMANA, FECHA…) se usa la que trae más fechas distintas
+    var cands = [];
+    A[hi].forEach(function (h, j) { var c = canon(h); if (h != null && /CORTE|SEMAN|FECHA/.test(c)) cands.push({ h: String(h).trim(), c: c, j: j, set: {} }); });
+    for (i = hi + 1; i < A.length; i++) {
+      r = A[i]; if (!r || typeof r[0] !== 'string' || !r[0].trim() || typeof r[2] !== 'string' || !r[2].trim()) continue;
+      cands.forEach(function (cd) { var d = toISO(r[cd.j]); if (d) cd.set[d] = 1; });
+    }
+    cands.forEach(function (cd) { cd.n = Object.keys(cd.set).length; });
+    var best = null; cands.forEach(function (cd) { if (cd.n && (!best || cd.n > best.n || (cd.n === best.n && cd.c === 'CORTE'))) best = cd; });
+    if (!best) throw new Error('No encontré una columna con fechas de corte (CORTE) en la hoja NORMALIDAD.');
+    var dateCol = best.j;
     var rows = [], skipped = 0;
     for (i = hi + 1; i < A.length; i++) {
       r = A[i]; if (!r) continue;
       if (typeof r[0] !== 'string' || !r[0].trim() || typeof r[2] !== 'string' || !r[2].trim()) continue;   // totales y renglones vacíos
-      var date = toISO(r[weekCol]), monthDate = toISO(r[monthCol]); if (!date || !monthDate) { skipped++; continue; }
-      rows.push({ region: r[0].trim(), agency: String(r[1] == null ? '' : r[1]).trim() || 'SIN AGENCIA', date: date, month: monthDate.slice(0, 7),
-        esp: N(r[col['ESPERADO']]), rec: N(r[col['RECIBIDO']]), amtE: N(r[col['$ ESPERADA']]), amtER: N(r[col['$ ESPERADA RECIBIDA']]), amtNE: N(r[col['$ RECIBIDA NO ESPERADA']]) });
+      var date = toISO(r[dateCol]); if (!date) { skipped++; continue; }
+      rows.push({ region: r[0].trim(), agency: String(r[1] == null ? '' : r[1]).trim() || 'SIN AGENCIA', ejecutivo: r[2].trim(), date: date,
+        esp: N(r[col['ESPERADO']]), rec: N(r[col['RECIBIDO']]), amtE: N(r[col['$ ESPERADA']]), amtR: col['$ RECIBIDA'] != null ? N(r[col['$ RECIBIDA']]) : N(r[col['$ ESPERADA RECIBIDA']]) + N(r[col['$ RECIBIDA NO ESPERADA']]), amtER: N(r[col['$ ESPERADA RECIBIDA']]), amtNE: N(r[col['$ RECIBIDA NO ESPERADA']]) });
     }
     if (!rows.length) throw new Error('La hoja NORMALIDAD no trae filas con fecha de corte.');
-    var by = {}; rows.forEach(function (x) { (by[x.month] = by[x.month] || []).push(x); });
+    var by = {}; rows.forEach(function (x) { var k = monthOfCut(x.date); (by[k] = by[k] || []).push(x); });
     var months = Object.keys(by).sort().map(function (k) { return aggMonth(k, by[k]); });
-    return { months: months, rows: rows.length, skipped: skipped };
+    return { months: months, raw: by, rows: rows.length, skipped: skipped, dateHeader: best.h, dateCols: cands.filter(function (c) { return c.n; }).map(function (c) { return { h: c.h, n: c.n }; }) };
   }
   function blank() { return { expected: 0, received: 0, expectedAmt: 0, receivedExpected: 0, receivedUnexpected: 0, rows: 0 }; }
   function add(o, x) { o.expected += x.esp; o.received += x.rec; o.expectedAmt += x.amtE; o.receivedExpected += x.amtER; o.receivedUnexpected += x.amtNE; o.rows++; }
@@ -1648,6 +1651,13 @@ function tableHTML(head,rows){return `<thead><tr>${head.map(x=>`<th>${esc(x)}</t
     return { month: key, rows: rows.length, regions: regions, agencies: agencies, weeks: weeks, weeklyRegion: weekly(wr), weeklyAgency: weekly(wa), total: t };
   }
 
+  function fromServer(d) {     // el servidor devuelve filas de NORMALIDAD; el resumen se calcula aquí
+    if (d && d.cols && d.rows) {
+      return aggMonth(d.month, d.rows.map(function (a) { return { region: a[0], agency: a[1] || 'SIN AGENCIA', date: a[2], esp: N(a[3]), rec: N(a[4]), amtE: N(a[5]), amtER: N(a[6]), amtNE: N(a[7]) }; }));
+    }
+    return d;
+  }
+
   /* ---------- servidor (Apps Script) y respaldo local ---------- */
   function api(action, payload) {
     return new Promise(function (res, rej) {
@@ -1656,20 +1666,16 @@ function tableHTML(head,rows){return `<thead><tr>${head.map(x=>`<th>${esc(x)}</t
     });
   }
   function months() {
-    var map = {};
+    var map = {}, loc = load().meses;
     (remote.list || []).forEach(function (m) { map[m.key] = { key: m.key, label: m.label || mesLabel(m.key), src: 'server' }; });
+    Object.keys(loc).forEach(function (k) { if (!map[k]) map[k] = { key: k, label: mesLabel(k), src: 'local' }; });
     return Object.keys(map).sort().reverse().map(function (k) { return map[k]; });
   }
   function dataFor(key) { return cache[key] || load().meses[key] || null; }
   function loadList(done) {
     if (remote.loading) return; remote.loading = true; render();
-    api('report_bundle', { report: current }).then(function (r) {
-        remote.list = (r.items || r.reportes || []).map(function (x) { return { key: x.key, label: x.label }; });
-        Object.keys(r.data || {}).forEach(function (key) { if (r.data[key]) cache[key] = r.data[key]; });
-        remote.err = '';
-      }).catch(function () {
-        return api('report_list', { report: current }).then(function (r) { remote.list = (r.items || r.reportes || []).map(function (x) { return { key: x.key, label: x.label }; }); remote.err = ''; });
-      }).catch(function (x) { remote.list = []; remote.err = x.message || String(x); })
+    api('report_list', { report: current }).then(function (r) { remote.list = (r.items || r.reportes || []).map(function (x) { return { key: x.key, label: x.label, rows: x.rows }; }); remote.err = ''; })
+      .catch(function (x) { remote.list = []; remote.err = x.message || String(x); })
       .then(function () {
         remote.loading = false; var ms = months();
         if (!selMonth || !ms.some(function (m) { return m.key === selMonth; })) selMonth = ms.length ? ms[0].key : null;
@@ -1678,10 +1684,9 @@ function tableHTML(head,rows){return `<thead><tr>${head.map(x=>`<th>${esc(x)}</t
       });
   }
   function loadData(key, after) {
-    key = String(key || '').trim();
     if (dataFor(key)) { if (after) after(); else render(); return; }
     loadingKey = key; viewErr = ''; setStatus('Cargando ' + mesLabel(key) + '…'); if (!cb) render();
-    api('report_get', { report: current, key: key }).then(function (r) { var d = r.data || r.reporte || null; if (!d || String(d.month || key) !== key) throw new Error('El servidor devolvió un mes distinto al solicitado.'); cache[key] = d; })
+    api('report_get', { report: current, key: key }).then(function (r) { cache[key] = fromServer(r.data || r.reporte || null); if (!cache[key]) throw new Error('El servidor no devolvió datos.'); })
       .catch(function (x) { viewErr = 'No se pudo cargar el reporte: ' + (x.message || x); })
       .then(function () { loadingKey = null; if (after) after(); else render(); });
   }
@@ -1716,14 +1721,13 @@ function tableHTML(head,rows){return `<thead><tr>${head.map(x=>`<th>${esc(x)}</t
     cb.init({ months: ms, selected: selMonth, onMonth: onMonth, onRefresh: function () { remote.list = null; cache = {}; viewErr = ''; openReport(); } });
   }
   function onMonth(key) {
-    selMonth = String(key || '').trim(); viewErr = '';
-    cb = null;
-    if (dataFor(selMonth)) { render(); return; }
-    loadData(selMonth, function () { render(); });
+    selMonth = key; viewErr = '';
+    if (dataFor(key)) { render(); return; }
+    loadData(key);
   }
   function openReport() {
     viewErr = '';
-    if (remote.list === null) { cache = {}; selMonth = null; render(); loadList(); return; }
+    if (remote.list === null) { render(); loadList(); return; }
     var ms = months();
     if (!selMonth || !ms.some(function (m) { return m.key === selMonth; })) selMonth = ms.length ? ms[0].key : null;
     render(); if (selMonth && !dataFor(selMonth)) loadData(selMonth);
@@ -1733,16 +1737,17 @@ function tableHTML(head,rows){return `<thead><tr>${head.map(x=>`<th>${esc(x)}</t
   var prepared = null;
   function admEl(id) { return document.getElementById(id); }
   function admMsg(t, cls) { var m = admEl('dx-adm-rep-msg'); if (m) { m.className = 'dx-adm-info' + (cls ? ' dx-adm-' + cls : ''); m.innerHTML = t; m.hidden = !t; } }
-   function admList() {
-     var box = admEl('dx-adm-rep-list'); if (!box) { api('report_list', { report: 'cobranza_mensual' }).catch(function () {}); return; }
+  function admList() {
+    var box = admEl('dx-adm-rep-list'); if (!box) return;
     box.innerHTML = '<span class="dx-spin"></span>Consultando reportes publicados…';
-    api('report_list', { report: 'cobranza_mensual' }).then(function (r) { remote.list = (r.items || r.reportes || []).map(function (x) { return { key: x.key, label: x.label }; }); remote.err = ''; })
+    api('report_list', { report: 'cobranza_mensual' }).then(function (r) { remote.list = (r.items || r.reportes || []).map(function (x) { return { key: x.key, label: x.label, rows: x.rows }; }); remote.err = ''; })
       .catch(function (x) { remote.list = []; remote.err = x.message || String(x); })
       .then(function () {
         var ms = months();
         if (!ms.length) { box.innerHTML = '<p style="color:#9db0cf;font-size:13px">No hay meses publicados.' + (remote.err ? ' <span class="dx-adm-err">(' + e(remote.err) + ')</span>' : '') + '</p>'; return; }
+        var rowsOf = {}; (remote.list || []).forEach(function (m) { rowsOf[m.key] = m.rows; });
         var h = '<table class="dx-adm-list"><thead><tr><th>Mes</th><th>Dónde está</th><th></th></tr></thead><tbody>';
-        ms.forEach(function (m) { h += '<tr><td><b>' + e(m.label) + '</b></td><td>' + (m.src === 'server' ? 'Servidor' : 'Solo este navegador') + '</td><td><button type="button" class="admin-btn secondary" data-dx-adm-del="' + e(m.key) + '" data-src="' + m.src + '">Quitar</button></td></tr>'; });
+        ms.forEach(function (m) { h += '<tr><td><b>' + e(m.label) + '</b></td><td>' + (m.src === 'server' ? 'Hoja NORMALIDAD' + (rowsOf[m.key] ? ' · ' + Number(rowsOf[m.key]).toLocaleString('es-MX') + ' filas' : '') : 'Solo este navegador') + '</td><td><button type="button" class="admin-btn secondary" data-dx-adm-del="' + e(m.key) + '" data-src="' + m.src + '">Quitar</button></td></tr>'; });
         box.innerHTML = h + '</tbody></table>' + (remote.err ? '<p class="dx-adm-err" style="font-size:12px">El servidor respondió: ' + e(remote.err) + '</p>' : '');
       });
   }
@@ -1756,36 +1761,54 @@ function tableHTML(head,rows){return `<thead><tr>${head.map(x=>`<th>${esc(x)}</t
         var wb = XLSX.read(new Uint8Array(fr.result), { type: 'array' }), p = parseNormalidad(wb), exist = {};
         months().forEach(function (m) { exist[m.key] = 1; });
         prepared = p; if (pub) pub.disabled = false;
+        var dshort = function (d) { return d.slice(8, 10) + '-' + ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'][+d.slice(5, 7) - 1]; };
+        var few = p.months.filter(function (m) { return m.weeks.length < 4; });
         var h = '<b>' + p.rows.toLocaleString('es-MX') + ' registros de ejecutivo</b> en la hoja NORMALIDAD · ' + p.months.length + (p.months.length === 1 ? ' mes detectado' : ' meses detectados') + (p.skipped ? ' · ' + p.skipped + ' filas sin fecha de corte omitidas' : '') +
-          '<table class="dx-adm-list"><thead><tr><th>Mes</th><th>Registros</th><th>Cortes</th><th>Regiones</th><th>Agencias</th><th>Normalidad</th><th>$ Esperado</th><th>Al publicar</th></tr></thead><tbody>';
-         p.months.forEach(function (m) { h += '<tr><td><b>' + e(mesLabel(m.month)) + '</b></td><td>' + m.rows + '</td><td>' + m.weeks.length + '</td><td>' + m.total.regions + '</td><td>' + m.total.agencies + '</td><td>' + X.pct(m.total.normality) + '</td><td>' + X.money(m.total.expectedAmt) + '</td><td>' + (exist[m.month] ? 'Bloqueado: mes ya publicado' : 'Mes nuevo') + '</td></tr>'; });
-        admMsg(h + '</tbody></table><span style="color:#9db0cf">Revisa que sean los meses correctos y pulsa «Publicar reporte». Cada mes se guarda por separado; el reporte se va concentrando mes con mes.</span>', '');
+          '<br><span style="color:#9db0cf">Columna de corte semanal usada: <b>' + e(p.dateHeader) + '</b>' + (p.dateCols.length > 1 ? ' (otras columnas de fecha: ' + p.dateCols.filter(function (c) { return c.h !== p.dateHeader; }).map(function (c) { return e(c.h) + ' con ' + c.n + ' fecha' + (c.n === 1 ? '' : 's'); }).join(', ') + ')' : '') + '</span>' +
+          '<table class="dx-adm-list"><thead><tr><th>Mes</th><th>Registros</th><th>Cortes semanales</th><th>Regiones</th><th>Agencias</th><th>Normalidad</th><th>$ Esperado</th><th>Al publicar</th></tr></thead><tbody>';
+        p.months.forEach(function (m) { h += '<tr><td><b>' + e(mesLabel(m.month)) + '</b></td><td>' + m.rows + '</td><td' + (m.weeks.length < 4 ? ' class="dx-adm-err"' : '') + '><b>' + m.weeks.length + '</b> · ' + m.weeks.map(function (w) { return dshort(w.date); }).join(', ') + (m.weeks.length < 4 ? ' ⚠' : '') + '</td><td>' + m.total.regions + '</td><td>' + m.total.agencies + '</td><td>' + X.pct(m.total.normality) + '</td><td>' + X.money(m.total.expectedAmt) + '</td><td>' + (exist[m.month] ? 'Reemplaza las filas del mes' : 'Mes nuevo') + '</td></tr>'; });
+        if (few.length) h += '</tbody></table><div class="dx-adm-err" style="margin-top:8px"><b>⚠ Revisa antes de publicar:</b> ' + few.map(function (m) { return mesLabel(m.month) + ' trae ' + m.weeks.length + (m.weeks.length === 1 ? ' corte semanal' : ' cortes semanales'); }).join('; ') + '. Un mes debe traer 4 o 5 cortes semanales para que las gráficas de tendencia, el mapa de calor y «quién mejoró» se muevan. Si la hoja trae una columna distinta con los cortes semanales, usa el botón «Diagnosticar hoja NORMALIDAD».</div><table style="display:none"><tbody>';
+        admMsg(h + '</tbody></table><span style="color:#9db0cf">Cada corte semanal cuenta para el mes en que cae la mayor parte de su semana (p. ej. el corte del 2-oct pertenece a septiembre). Revisa los meses y pulsa «Publicar reporte».</span>', '');
       } catch (x) { admMsg('No se pudo leer: ' + e(x.message), 'err'); }
     };
     fr.readAsArrayBuffer(file);
   }
   function admPublish() {
     var p = prepared; if (!p) return;
-     var existing = p.months.filter(function (m) { return months().some(function (x) { return x.key === m.month; }); });
-     if (existing.length) { admMsg('No se publicó el archivo porque ya existe información para: <b>' + existing.map(function (m) { return e(mesLabel(m.month)); }).join(', ') + '</b>.<br>Esta versión solo permite anexar meses nuevos y conserva el histórico sin reemplazarlo.', 'err'); return; }
     var names = p.months.map(function (m) { return mesLabel(m.month); }).join(', ');
-     if (!confirm('¿Anexar ' + (p.months.length === 1 ? 'el mes ' : 'los meses ') + names + '?\nLos meses existentes se conservan sin reemplazo.')) return;
+    var fewW = p.months.filter(function (m) { return m.weeks.length < 2; }).map(function (m) { return mesLabel(m.month); });
+    if (!confirm((fewW.length ? '⚠ ' + fewW.join(', ') + ' trae un solo corte semanal: las gráficas semanales saldrán con un solo punto.\n\n' : '') + '¿Publicar ' + (p.months.length === 1 ? 'el mes ' : 'los meses ') + names + ' en la hoja NORMALIDAD?\nLas filas de ese mes que ya existan se reemplazan (se guarda un respaldo); los demás meses no se tocan.')) return;
     var pub = admEl('dx-adm-rep-pub'); if (pub) pub.disabled = true;
-    var ok = [], localOnly = [], i = 0, lastErr = '';
+    var ok = [], localOnly = [], i = 0, lastErr = '', resumen = [];
     function next() {
       if (i >= p.months.length) {
-        remote.list = null; prepared = null;
+        remote.list = null; cache = {}; prepared = null;
         var t = '';
-        if (ok.length) t += '✔ Publicado en el servidor: <b>' + ok.map(mesLabel).join(', ') + '</b>.<br>';
-        if (localOnly.length) t += 'El servidor no aceptó (' + e(lastErr) + '). Se guardó <b>solo en este navegador</b>: ' + localOnly.map(mesLabel).join(', ') + '.<br>Para que lo vean todos hay que habilitar las acciones <code>report_save / report_list / report_get</code> en Apps Script.';
+        if (ok.length) t += '✔ Hoja NORMALIDAD actualizada: <b>' + resumen.join('; ') + '</b>.<br>';
+        if (localOnly.length) t += 'El servidor no aceptó la publicación (' + e(lastErr) + '). Se guardó <b>solo en este navegador</b>: ' + localOnly.map(mesLabel).join(', ') + '.<br>Para escribir en la hoja NORMALIDAD hay que instalar la versión actualizada del script de Apps Script (acciones <code>report_list / report_get / report_publish</code>).';
         admMsg(t, localOnly.length ? 'err' : 'ok'); if (pub) pub.disabled = false; admList(); return;
       }
       var m = p.months[i++]; admMsg('<span class="dx-spin"></span>Publicando ' + e(mesLabel(m.month)) + ' (' + i + ' de ' + p.months.length + ')…', '');
-      api('report_save', { report: 'cobranza_mensual', key: m.month, label: mesLabel(m.month), data: m }).then(function () { cache[m.month] = m; ok.push(m.month); })
-        .catch(function (x) { lastErr = x.message || String(x); var st = load(); st.meses[m.month] = m; save(st); localOnly.push(m.month); })
+      var rows = (p.raw[m.month] || []).map(function (x) { return { region: x.region, agency: x.agency, ejecutivo: x.ejecutivo, date: x.date, esp: x.esp, rec: x.rec, amtE: x.amtE, amtR: x.amtR, amtER: x.amtER, amtNE: x.amtNE }; });
+      api('report_publish', { report: 'cobranza_mensual', key: m.month, label: mesLabel(m.month), rows: rows }).then(function (res) {
+        cache[m.month] = m; ok.push(m.month);
+        resumen.push(mesLabel(m.month) + ': ' + (res.added != null ? res.added.toLocaleString('es-MX') + ' filas' : 'publicado') + (res.removed ? ' (reemplazó ' + res.removed.toLocaleString('es-MX') + ')' : ''));
+      }).catch(function (x) { lastErr = x.message || String(x); var st = load(); st.meses[m.month] = m; save(st); localOnly.push(m.month); })
         .then(next);
     }
     next();
+  }
+  function admDiagnose() {
+    admMsg('<span class="dx-spin"></span>Leyendo la hoja NORMALIDAD del Google Sheet…', '');
+    api('report_diagnose', { report: 'cobranza_mensual' }).then(function (r) {
+      var h = '<b>Hoja NORMALIDAD del Google Sheet</b> · ' + Number(r.rows).toLocaleString('es-MX') + ' filas de datos · encabezados en la fila ' + r.header_row +
+        '<br><span style="color:#9db0cf">Columnas: ' + r.headers.map(e).join(' · ') + '</span>' +
+        '<br>Columnas de fecha: ' + (r.date_columns.length ? r.date_columns.map(function (c) { return '<b>' + e(c.header) + '</b> (' + c.distinct + ' fechas distintas, de ' + e(c.first) + ' a ' + e(c.last) + ')'; }).join(' · ') : '<span class="dx-adm-err">ninguna con fechas válidas</span>') +
+        '<br>Corte semanal (mueve las gráficas): <b>' + e(r.weekly_column || r.chosen || '—') + '</b> · Corte mensual (mes al que pertenece cada fila): <b>' + e(r.monthly_column || 'no hay; el mes se deduce de la semana') + '</b>' +
+        '<table class="dx-adm-list"><thead><tr><th>Mes</th><th>Filas</th><th>Cortes semanales</th></tr></thead><tbody>' +
+        r.months.map(function (m) { return '<tr><td><b>' + e(mesLabel(m.key)) + '</b></td><td>' + m.rows + '</td><td' + (m.cuts.length < 4 ? ' class="dx-adm-err"' : '') + '><b>' + m.cuts.length + '</b> · ' + m.cuts.map(e).join(', ') + (m.cuts.length < 4 ? ' ⚠' : '') + '</td></tr>'; }).join('') + '</tbody></table>';
+      admMsg(h, '');
+    }).catch(function (x) { admMsg('No se pudo diagnosticar: ' + e(x.message || x) + '<br>(Hay que instalar la versión actualizada del script de Apps Script.)', 'err'); });
   }
   function admDelete(key, src) {
     if (!confirm('¿Quitar el mes ' + mesLabel(key) + ' del reporte?')) return;
@@ -1806,17 +1829,18 @@ function tableHTML(head,rows){return `<thead><tr>${head.map(x=>`<th>${esc(x)}</t
     });
     pop += '<div class="dx-menu-note" id="dx-menu-note">Consultando reportes…</div>';
     tabs.insertAdjacentHTML('beforeend', '<div class="dx-menu" id="dx-rep-menu"><button type="button" class="dx-menu-btn" id="dx-rep-btn" aria-haspopup="true" aria-expanded="false">📊 Reportes ▾</button><div class="dx-menu-pop" role="menu" hidden>' + pop + '</div></div>');
-     adm.insertAdjacentHTML('beforeend', '<section class="admin-card" id="dx-adm-rep"><h3>Reportes mensuales · Publicar nuevo mes</h3>' +
-       '<p>El reporte <b>Cobranza por pago mensual</b> se sincroniza desde la hoja <b>NORMALIDAD</b>. Usa esta carga únicamente para anexar el siguiente mes; los meses existentes no se reemplazan.</p>' +
-       '<div class="dx-adm-row"><input type="file" id="dx-adm-rep-file" accept=".xlsb,.xlsx,.xls"><button type="button" class="admin-btn" id="dx-adm-rep-pub" disabled>Publicar nuevo mes</button></div>' +
-       '<div id="dx-adm-rep-msg" class="dx-adm-info" hidden></div></section>');
+    adm.insertAdjacentHTML('beforeend', '<section class="admin-card" id="dx-adm-rep"><h3>Reportes mensuales · Cargar información</h3>' +
+      '<p>Aquí se carga la información que después se consulta en <b>Reportes</b>. Para <b>Cobranza por pago mensual</b> selecciona el archivo del mes (o uno con varios meses): se lee su hoja <b>NORMALIDAD</b> y se <b>actualiza la hoja NORMALIDAD del Google Sheet</b>, reemplazando solo las filas de ese mes (se guarda un respaldo). El reporte se va concentrando mes con mes.</p>' +
+      '<div class="dx-adm-row"><label>Reporte <select id="dx-adm-rep-sel">' + REPORTES.map(function (r) { return '<option value="' + e(r.id) + '">' + e(r.nombre) + '</option>'; }).join('') + '</select></label>' +
+      '<input type="file" id="dx-adm-rep-file" accept=".xlsb,.xlsx,.xls"><button type="button" class="admin-btn" id="dx-adm-rep-pub" disabled>Publicar reporte</button><button type="button" class="admin-btn secondary" id="dx-adm-rep-diag">Diagnosticar hoja NORMALIDAD</button></div>' +
+      '<div id="dx-adm-rep-msg" class="dx-adm-info" hidden></div><h4 style="margin:14px 0 4px">Meses publicados</h4><div id="dx-adm-rep-list"></div></section>');
   }
   var avail = {};
   function paintMenu(err) {
     var anyVisible = false;
     REPORTES.forEach(function (rp) {
       var btn = document.querySelector('.dx-menu-item[data-dx-rep="' + rp.id + '"]'); if (!btn) return;
-      var map = {}; (avail[rp.id] || []).forEach(function (m) { map[m.key] = m; });
+      var map = {}; (avail[rp.id] || []).forEach(function (m) { map[m.key] = m; }); Object.keys(load().meses).forEach(function (k) { if (!map[k]) map[k] = { key: k, label: mesLabel(k) }; });
       var keys = Object.keys(map).sort().reverse();
       btn.hidden = !keys.length;
       var sm = btn.querySelector('small'); if (sm && keys.length) sm.textContent = (map[keys[0]].label || mesLabel(keys[0])) + (keys.length > 1 ? ' · ' + keys.length + ' meses' : '');
@@ -1830,7 +1854,7 @@ function tableHTML(head,rows){return `<thead><tr>${head.map(x=>`<th>${esc(x)}</t
     var note = document.getElementById('dx-menu-note'); if (note) { note.hidden = false; note.textContent = 'Consultando reportes…'; }
     var pending = REPORTES.length, err = '';
     REPORTES.forEach(function (rp) {
-      api('report_list', { report: rp.id }).then(function (r) { avail[rp.id] = (r.items || r.reportes || []).map(function (x) { return { key: x.key, label: x.label }; }); })
+      api('report_list', { report: rp.id }).then(function (r) { avail[rp.id] = (r.items || r.reportes || []).map(function (x) { return { key: x.key, label: x.label, rows: x.rows }; }); })
         .catch(function (x) { avail[rp.id] = []; err = x.message || String(x); })
         .then(function () { if (--pending === 0) paintMenu(err); });
     });
@@ -1843,6 +1867,7 @@ function tableHTML(head,rows){return `<thead><tr>${head.map(x=>`<th>${esc(x)}</t
     if (btn) { var p = document.querySelector('#dx-rep-menu .dx-menu-pop'); p.hidden = !p.hidden; btn.setAttribute('aria-expanded', String(!p.hidden)); if (!p.hidden) refreshMenu(); return; }
     if (!t.closest('#dx-rep-menu')) closeMenu();
     if (t.closest('#dx-adm-rep-pub')) { admPublish(); return; }
+    if (t.closest('#dx-adm-rep-diag')) { admDiagnose(); return; }
     var del = t.closest('[data-dx-adm-del]'); if (del) { admDelete(del.getAttribute('data-dx-adm-del'), del.getAttribute('data-src')); return; }
     if (t.closest('.tab-btn[data-tab="administracion"]')) setTimeout(function () { admList(); }, 50);
   }, true);
@@ -1859,22 +1884,5 @@ function tableHTML(head,rows){return `<thead><tr>${head.map(x=>`<th>${esc(x)}</t
 })();
 </script>
 
-<script>
-(function(){
-  function enforceAdminOnly(){
-    var activeSession=typeof session!=='undefined'?session:null, role=String(activeSession&&activeSession.role||'').toLowerCase(), allowed=role==='admin';
-    var button=document.getElementById('admin-tab-btn'), panel=document.getElementById('tab-administracion');
-    if(button) button.style.display=allowed?'':'none';
-    if(panel) panel.style.display=allowed?'':'none';
-    if(!allowed && typeof state!=='undefined' && state.activeTab==='administracion'){
-      state.activeTab='indicadores';
-      var safe=document.querySelector('.tab-btn[data-tab="indicadores"]');
-      if(safe) safe.click();
-    }
-  }
-  enforceAdminOnly();
-  window.setInterval(enforceAdminOnly,1000);
-})();
-</script>
 </body>
 </html>
